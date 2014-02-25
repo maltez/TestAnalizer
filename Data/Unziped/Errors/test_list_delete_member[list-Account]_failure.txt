@@ -1,0 +1,129 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x041D3590>
+list_entity_test_criteria = <PyTest.CustomFixtures.custom_fixtures.ListEntityTestCriteria object at 0x03561990>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x041D3990>
+
+    @pytest.mark.crud
+    def test_list_delete_member(self, list_entity_test_criteria, search_api):
+        if isinstance(list_entity_test_criteria, ListEntityTestCriteria):
+            list_base = list_entity_test_criteria.api_object
+            list_base.es_client = self.es_client
+            list_logical_name = list_entity_test_criteria.entity_name
+            member_type = list_entity_test_criteria.member_type
+            list_member_type_logical_name = list_base.list_type_member_mapping(member_type)
+            _primary_key = self.es_client.edge_metadata[list_logical_name].CacheSchema.get_fields(flags=["IsKey"])[0]["PropertyName"]
+    
+            ###Create new marketing list###
+            create_response = list_base.create_entity(params={"member_type": member_type})
+    
+            #Check whether request has been performed successfully
+            self.assertHttpResponseCode(http_response=create_response)
+    
+            #Create model
+            create_resp_model = self.create_entity_model(
+                response=create_response[1],
+                primary_key_field=_primary_key,
+                search_api=search_api)
+    
+            #check list in index
+            self.assertEntityInIndex(
+                search_api=search_api,
+                entity_type=list_logical_name,
+                entityid=create_resp_model.id
+            )
+    
+            #get random entity from ES by list_member_type_logical_name to add to list
+            random_entity_id = self.es_client.get_entity_by_type(
+                entity_type=list_member_type_logical_name
+>           )[0]
+E           IndexError: list index out of range
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\ListBased\test_list_based_action.py:155: IndexError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.563000
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 124
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency HTTP/1.1" 200 2229
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency_1 HTTP/1.1" 404 113
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/transactioncurrency_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 655
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"createdfromcode": "Contact", "listname": "TEST French / Fran\u00c3\u00a7ais", "type": "list", "description": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/list//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"createdfromcode": "Account", "listname": "TEST French / Fran\u00c3\u00a7ais", "type": "list", "description": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/list// HTTP/1.1" 200 1268
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.573000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["81efbbc6-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2863
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:02.810000
+IncrementalUpdateAssertMixin.py  136 ERROR    Unable to get entity Index Version from index. entity-type=list|entity_id=81efbbc6-7998-e311-aa29-00155d28de35 
+IncrementalUpdateAssertMixin.py  138 ERROR    'IndexVersion'
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\IncrementalUpdateAssertMixin.py", line 132, in check_entity_index_version
+    index_version = obj['Results'][0]['IndexVersion']
+KeyError: 'IndexVersion'
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search list in Index with Id - 81efbbc6-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["81efbbc6-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2863
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.577000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - 81efbbc6-7998-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"lockstatus": "False", "modifiedon": "2014-02-18T08:51:03Z", "listname": "TEST French / Fran\u00c3\u00a7ais", "createdon": "2014-02-18T08:51:03Z", "listid": "81efbbc6-7998-e311-aa29-00155d28de35", "versionnumber": 2082892, "statecode": "Active", "listtype": "False", "statuscode": "Active"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 81efbbc6-7998-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601 HTTP/1.1" 400 92
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601 HTTP/1.1" 400 92
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_count HTTP/1.1" 200 62
+#########################Server error trace#########################
+{"index":[],"megs":[]}

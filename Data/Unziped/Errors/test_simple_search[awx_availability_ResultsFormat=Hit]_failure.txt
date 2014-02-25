@@ -1,0 +1,71 @@
+#########################Automated tests trace#########################
+
+self = <Search.Tests.SimpleSearch.SearchByField.test_search_by_field.TestSearchByField object at 0x04794570>
+search_entity = <PyTest.InputTestCriteria.InputTestCriteria.SimpleSearchCriteria object at 0x0403F670>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x047942B0>
+
+    @pytest.mark.xre_demo
+    @pytest.mark.simple_search
+    def test_simple_search(self, search_entity, search_api):
+        """
+    
+            @param search_entity:
+            @param search_api:
+            @return:
+            """
+        if isinstance(search_entity, SimpleSearchCriteria):
+            entity_type = search_entity.entity_type
+            search_params = search_entity.params
+            search_api.entity_name = entity_type
+            try:
+                response_code, response_text = search_api.send_search_request(
+                    request_body=SearchRequest(
+                        ResultsFormat=search_params["ResultsFormat"],
+                        TermFacetSize=1,
+                        Size=15
+                    ).to_json()
+                )
+                self.assertSearchResponse(response_code, response_text, validate_result=True)
+                self.assertSearchResultsFormat(response_text, search_params["ResultsFormat"])
+            except AssertionError, e:
+                self.logger.exception(e)
+                pytest.fail("Search not working for {0}. Inner assertion: {1}".format(
+                    str(search_entity),
+>                   e.message
+                ))
+E               Failed: Search not working for awx_availability__ResultsFormat=Hit. Inner assertion:
+
+C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\SearchByField\test_search_by_field.py:59: Failed
+-------------------------------- Captured log ---------------------------------
+test_search_by_field.py     30 INFO     
+Starting test: test_simple_search
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'25a905dede6f4f3599d0edad49031154', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.778000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_availability
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'25a905dede6f4f3599d0edad49031154', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": "Hit", "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": [], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 15}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_availability HTTP/1.1" 200 35199
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.441000
+test_search_by_field.py     56 ERROR    assert isinstance(<Search.Implementation.Contract.Responses.search_result.SearchResultBase object at 0x044BB550>, SearchResultHit)
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\SearchByField\test_search_by_field.py", line 54, in test_simple_search
+    self.assertSearchResultsFormat(response_text, search_params["ResultsFormat"])
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Assertions\SearchBaseAssertMixin.py", line 158, in assertSearchResultsFormat
+    assert isinstance(search_response.results[0], SearchResultHit)
+AssertionError: assert isinstance(<Search.Implementation.Contract.Responses.search_result.SearchResultBase object at 0x044BB550>, SearchResultHit)
+#########################Server error trace#########################
+{"index":[],"megs":[]}

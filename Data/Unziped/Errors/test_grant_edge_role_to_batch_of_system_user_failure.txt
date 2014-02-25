@@ -1,0 +1,101 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.EdgeRole.test_edge_role.TestEdgeRole object at 0x04260330>
+
+    def test_grant_edge_role_to_batch_of_system_user(self):
+        #get batch of system users from index
+        test_user_ids = self.es_client.get_entity_by_type("systemuser", _size=10, randomize=False)[0]
+    
+        #create test edge role
+        test_role = "Test Custom Role {0}".format(datetime.now().strftime('%Y%m%d_%H%M%S'))
+    
+        #create request body for batch assignment
+        test_req_body = {
+            "Role": test_role,
+            "UsersRequest": {
+                "Ids": test_user_ids,
+                "Size": 10
+            }
+        }
+        #create dict {"system user id" : [edge role list]}
+        curr_roles = {}
+        for user_id in test_user_ids:
+            curr_roles[user_id] = self.get_edge_roles(self.es_client,user_id)
+    
+        #grant role to batch of system user
+        http_response = self.edge_role.grant_role_to_batch_of_users(test_req_body)
+    
+        #check http response code
+        assert http_response[0] in range(200, 299),\
+            "Unable to grant edge role to batch of system users -{0}, system returns {1} error".format(
+            test_user_ids,
+            http_response[0]
+        )
+        for user_id in test_user_ids:
+            #check roles list in index
+            self.assertSystemUserEdgeRolesInIndex(
+                self.es_client,
+                user_id,
+>               [test_role] + curr_roles[user_id]
+            )
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\EdgeRole\test_edge_role.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Tests.EdgeRole.test_edge_role.TestEdgeRole object at 0x04260330>
+es_client = <elasticsearch_client.elasticsearch_client object at 0x024F8470>
+user_id = 'e8b9896a-be56-e311-9314-00155d280475'
+curr_roles = ['Test Custom Role 20140218_025117']
+
+    def assertSystemUserEdgeRolesInIndex(self, es_client, user_id=None, curr_roles=None):
+        edge_roles = self.get_edge_roles(es_client, user_id)
+        if not edge_roles:
+            edge_roles.append(self._get_system_user_business_unit(es_client, user_id))
+        #check list edge roles in index equal to list of roles returned via REST API
+>       assert set(curr_roles) == set(edge_roles)
+E       assert set(['Test Cu...0218_025117']) == set(['Test Cus...0218_025117'])
+E         Extra items in the right set:
+E         'Test Custom Role 20140218_025116'
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\EdgeRoleAssertMixin.py:13: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2124
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:02.121000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser HTTP/1.1" 200 3980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 8369
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 935
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 950
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 934
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 934
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 923
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 950
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 961
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 937
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 951
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/EdgeRole/{Id}/PostBatch
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"Role": "Test Custom Role 20140218_025117", "UsersRequest": {"Ids": ["e8b9896a-be56-e311-9314-00155d280475", "bd72f955-9c8d-e311-a5b4-00155d28de35", "d98fe26a-9c8d-e311-a5b4-00155d28de35", "c13eb2e4-ea97-e311-aa29-00155d28de35", "a204cdce-bd77-e311-8d25-00155d280475", "82bb1184-be56-e311-9314-00155d280475", "f347b6fc-0a82-e311-a5b4-00155d28de35", "79470990-9b8d-e311-a5b4-00155d28de35", "d727d5dc-9b8d-e311-a5b4-00155d28de35", "b9232bfe-9b8d-e311-a5b4-00155d28de35"], "Size": 10}}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/EdgeRole/%7BId%7D/PostBatch HTTP/1.1" 200 23
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:14.195000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1427
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuseredgeroles HTTP/1.1" 404 111
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "HEAD /xre2113qa.nightly/systemuseredgeroles/dff0feb5-374d-4473-9fea-0bdc9dccc192 HTTP/1.1" 200 0
+#########################Server error trace#########################
+{"index":[{"TimeStamp":"2014-02-18T08:51:34.539013Z","Message":"Entity is not in index. Type:awx_adhoclistmember, id:752169dd-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:51:28.8206","ThreadId":"108","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:51:34.7391955Z","Message":"Entity is not in index. Type:awx_adhoclist, id:65061cd6-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:51:28.8762","ThreadId":"141","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:51:34.9442605Z","Message":"Entity is not in index. Type:awx_adhoclist, id:5d061cd6-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:51:28.9094","ThreadId":"151","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:51:35.001874Z","Message":"Entity is not in index. Type:awx_adhoclistmember, id:6e2169dd-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:51:29.5744","ThreadId":"108","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""}],"megs":[]}

@@ -1,0 +1,172 @@
+#########################Automated tests trace#########################
+
+self = <Search.Tests.SearchWithRelations.test_search_with_relations.TestSearchWithRelations object at 0x047A6BD0>
+entity_with_test_field = <PyTest.InputTestCriteria.InputTestCriteria.EntityWithField object at 0x035B60B0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x047B4B30>
+
+    @pytest.mark.xre_demo
+    def test_search_with_relations_with_term_filter(self, entity_with_test_field, search_api):
+        if isinstance(entity_with_test_field, EntityWithField):
+            entity_type = entity_with_test_field.entity_type
+            related_entities = entity_with_test_field.field_name.split(",")
+    
+            self.logger.debug(entity_with_test_field.to_str_repr())
+    
+            try:
+                ids, related_ids = self.get_entity_ids_related_to(
+                    entity_type,
+                    related_entities,
+                    self.es_client
+                )
+                relations_collection = []
+                relation_counts_collection = []
+                for i, related_entity in enumerate(related_entities):
+                    self.logger.info("send search request for related entity to get sample of term filter")
+                    search_api.entity_name = related_entity
+                    res1_code, res1_text = search_api.send_search_request(
+                        request_body=SearchRequest(
+                            Ids=[related_ids[i]]
+                        ).to_json()
+                    )
+                    self.assertSearchResponse(res1_code, res1_text)
+    
+                    facet_search_response = SearchResponse(
+                        json.loads(res1_text)
+                    )
+    
+                    max_count = None
+                    max_count_match = None
+                    facet_logical_name = None
+                    for facet_match in facet_search_response.term_facets.facets:
+                        if facet_match.total > 0:
+                            max_count, max_count_match = facet_match.get_max_count_facet_match()
+                            facet_logical_name = facet_match.logical_name
+                            if max_count_match:
+                                break
+    
+                    if not max_count_match:
+                        raise SkipTestException("Valid TermFacetFilter not found for entity -{0}-".format(
+                            related_entity
+                        ))
+    
+                    relations_collection.append(
+                        RelationsBase(
+                            logical_name=related_entity,
+                            term_facet_filter=TermFacetFilter(
+                                logical_name=facet_logical_name,
+                                items=[max_count_match.to_request_filter()]
+                            )
+                        )
+                    )
+                    relation_counts_collection.append(
+                        RelationCountsBase(
+                            logical_name=related_entity,
+                            term_facet_filter=TermFacetFilter(
+                                logical_name=facet_logical_name,
+                                items=[max_count_match.to_request_filter()]
+                            )
+                        )
+                    )
+    
+                related_ids = dict(zip(ids, related_entities))
+    
+                search_api.entity_name = entity_type
+                response_code, response_text = search_api.send_search_request(
+                    request_body=SearchRequest(
+                        ResultsFormat="Hit",
+                        Relations=[item.to_json() for item in relations_collection],
+                        RelationCounts=[item.to_json() for item in relation_counts_collection],
+                        Ids=ids
+                    ).to_json()
+                )
+    
+                self.assertSearchResponse(response_code, response_text, validate_result=True)
+    
+                search_response = SearchResponse(json.loads(response_text))
+    
+                self.assertSearchWithRelations(
+                    search_response,
+                    related_ids
+                )
+            except SkipTestException, e:
+                self.logger.exception(e)
+                pytest.skip(e.message)
+            except AssertionError, e:
+                self.logger.exception(e)
+                pytest.fail("Search with relations not working for {0}. Inner assertion: {1}".format(
+                    str(entity_with_test_field),
+>                   e.message
+                ))
+E               Failed: Search with relations not working for awx_listing__annotation,awx_availability. Inner assertion: Search result not contain Relations, RelationCounts fields
+
+C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SearchWithRelations\test_search_with_relations.py:167: Failed
+-------------------------------- Captured log ---------------------------------
+test_search_with_relations.py   26 INFO     
+Starting test: test_search_with_relations_with_term_filter
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.317000
+test_search_with_relations.py   82 DEBUG    
+---Input data---
+test_entity_type=awx_listing
+field_name=annotation,awx_availability
+term_facet_size=None
+field_metadata=None
+---------------
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/annotation HTTP/1.1" 200 3030
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1141
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1513
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2084
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1647
+test_search_with_relations.py   93 INFO     send search request for related entity to get sample of term filter
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["dcbad574-6095-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 25}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 2284
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.517000
+test_search_with_relations.py   93 INFO     send search request for related entity to get sample of term filter
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_availability
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["7505310f-ae77-e311-8d25-00155d280475"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 25}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_availability HTTP/1.1" 200 12507
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.922000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_listing
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": "Hit", "From": 0, "SelectedDateTimeFacets": null, "Relations": [{"LogicalName": "annotation", "TermFacetFilters": [{"Items": ["True"], "LogicalName": "isdocument"}]}, {"LogicalName": "awx_availability", "TermFacetFilters": [{"Items": ["Open"], "LogicalName": "statuscode"}]}], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["3e5f6d56-f860-e311-9471-00155d280475", "a0ec0fe6-b677-e311-8d25-00155d280475"], "SelectedNumericFacets": null, "RelationCounts": [{"LogicalName": "annotation", "TermFacetFilters": [{"Items": ["True"], "LogicalName": "isdocument"}]}, {"LogicalName": "awx_availability", "TermFacetFilters": [{"Items": ["Open"], "LogicalName": "statuscode"}]}], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 25}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_listing HTTP/1.1" 200 18786
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.092000
+test_search_with_relations.py  164 ERROR    Search result not contain Relations, RelationCounts fields
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SearchWithRelations\test_search_with_relations.py", line 158, in test_search_with_relations_with_term_filter
+    related_ids
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Assertions\SearchWithRelationsAssertMixin.py", line 9, in assertSearchWithRelations
+    set(result.source.keys())), "Search result not contain Relations, RelationCounts fields"
+AssertionError: Search result not contain Relations, RelationCounts fields
+#########################Server error trace#########################
+{"index":[],"megs":[]}

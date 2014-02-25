@@ -1,0 +1,194 @@
+#########################Automated tests trace#########################
+Entity not found in search result, Retrying in 3 seconds...
+Entity not found in search result, Retrying in 6 seconds...
+Entity not found in search result, Retrying in 12 seconds...
+Entity not found in search result, Retrying in 24 seconds...
+Entity not found in search result, Retrying in 48 seconds...
+
+self = <MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x04222730>
+generic_entity_test_criteria = <PyTest.InputTestCriteria.InputTestCriteria.GenericEntityTestCriteria object at 0x035FE770>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x03464090>
+
+    @pytest.mark.crud
+    def test_create_entity(self, generic_entity_test_criteria, search_api):
+        if isinstance(generic_entity_test_criteria, GenericEntityTestCriteria):
+            entity = generic_entity_test_criteria.api_object
+            entity.es_client = self.es_client
+            _primary_key = self.es_client.edge_metadata[entity.entity_name].get_entity_primary_key_field()
+    
+            #Create entity
+            http_response = list(entity.create_entity(params={}))
+    
+            #Check whether request has been performed successfully
+            self.assertHttpResponseCode(http_response)
+    
+            init_model = self.create_entity_model(search_api, http_response[1], _primary_key)
+            self.add_to_local_entity_storage(entity, init_model)
+    
+            #Check whether entity instance present in index
+            self.assertEntityInIndex(
+                search_api,
+                init_model.logicalname,
+                init_model.id,
+>               primary_key_field=_primary_key
+            )
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\CRUD\test_entity_crud_action.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x04222730>, <Search.Implementation.Contract.search.SearchAPI object at 0x03464090>, 'annotation', '88ecfe4b-7798-e311-aa29-00155d28de35')
+kwargs = {'primary_key_field': 'annotationid'}, mtries = 0, mdelay = 96
+e = AssertionError('Entity not found in search result',)
+lastException = AssertionError('Entity not found in search result',)
+
+    def f_retry(*args, **kwargs):
+        mtries, mdelay = tries, delay
+        while mtries > 0:
+            try:
+                return f(*args, **kwargs)
+            except ExceptionToCheck, e:
+                print "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                time.sleep(mdelay)
+                mtries -= 1
+                mdelay *= backoff
+                lastException = e
+>       raise lastException
+E       AssertionError: Entity not found in search result
+
+C:\EdgeDeployment\FunctionalTests\src\Common\Decorators\custom_decorator.py:18: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.296000
+EntityBase.py              272 DEBUG    Creating request body...
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"mimetype": "TEST tqwak", "notetext": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "subject": "TEST French / Fran\u00c3\u00a7ais", "type": "annotation", "filename": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081"}
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_lease HTTP/1.1" 200 20540
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_lease_1 HTTP/1.1" 404 103
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_lease_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2162
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/note//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Content-Type': 'multipart/form-data; boundary=-------------------------acebdf13572468', 'Accept-Language': 'en-US,en;q=0.8', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: ---------------------------acebdf13572468
+Content-Type: application/json
+Content-Disposition: form-data; name="object"
+
+{"mimetype": "text/plain", "isdocument": true, "objectid": {"logicalname": "awx_lease", "id": "e038463e-db73-e311-bb29-00155d280475"}, "filename": "_test.txt", "notetext": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "type": "annotation", "subject": "TEST French / Fran\u00c3\u00a7ais"}
+---------------------------acebdf13572468
+Content-Type: text/plain
+Content-Disposition: form-data; name="file"; filename="_test.txt"
+
+123456
+---------------------------acebdf13572468--
+
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/note// HTTP/1.1" 200 1110
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.954000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["88ecfe4b-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 1910
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.800000
+IncrementalUpdateAssertMixin.py  136 ERROR    Unable to get entity Index Version from index. entity-type=annotation|entity_id=88ecfe4b-7798-e311-aa29-00155d28de35 
+IncrementalUpdateAssertMixin.py  138 ERROR    list index out of range
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\IncrementalUpdateAssertMixin.py", line 132, in check_entity_index_version
+    index_version = obj['Results'][0]['IndexVersion']
+IndexError: list index out of range
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search annotation in Index with Id - 88ecfe4b-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["88ecfe4b-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 1910
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.378000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 88ecfe4b-7798-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search annotation in Index with Id - 88ecfe4b-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["88ecfe4b-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 1910
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.323000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 88ecfe4b-7798-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search annotation in Index with Id - 88ecfe4b-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["88ecfe4b-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 1910
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.652000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 88ecfe4b-7798-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search annotation in Index with Id - 88ecfe4b-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["88ecfe4b-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 1910
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.824000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 88ecfe4b-7798-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search annotation in Index with Id - 88ecfe4b-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/annotation
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["88ecfe4b-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/annotation HTTP/1.1" 200 1910
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.199000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 88ecfe4b-7798-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:33:58.8363891Z","Message":"Entity has not been indexed before the timeout. Consider changing the value of timeout parameter 'WaitCrawlersTimeout' in section 'MegsSettings' of EDGE config","ErrorLevel":"WARN","Longdate":"2014-02-18 02:32:47.6085","ThreadId":"109","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.opportunity, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:33:58.9350156Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:32:48.4395","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:33:59.0043471Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:33:52.2479","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:33:59.0541486Z","Message":"Could not get the value of required parameter 'crm_account_name'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:33:52.2479","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""}]}

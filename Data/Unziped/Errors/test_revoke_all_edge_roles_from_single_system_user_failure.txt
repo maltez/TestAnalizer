@@ -1,0 +1,127 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.EdgeRole.test_edge_role.TestEdgeRole object at 0x03437930>
+
+    def test_revoke_all_edge_roles_from_single_system_user(self):
+        #apply edge role to test user
+        test_roles_list = ["Test Custom Role {0}".format(datetime.now().strftime('%Y%m%d_%H%M%S'))]
+    
+        http_response = self.edge_role.set_edge_role(self.test_user_id, test_roles_list)
+    
+        #check http response code
+        assert http_response[0] in range(200, 299), \
+            "Unable to grant edge role to single system user -{0}, system returns {1} error".format(
+            self.test_user_id,
+            http_response[0]
+        )
+        #check user has edge roles
+        self.assertSystemUserEdgeRolesInIndex(
+            self.es_client,
+            self.test_user_id,
+            test_roles_list
+        )
+    
+        #revoke all edge roles from system user
+        http_response = self.edge_role.revoke_edge_role_from_user(self.test_user_id)
+    
+        #check http response code
+        assert http_response[0] in range(200, 299),\
+            "Unable to revoke all edge role from single system user -{0}, system returns {1} error".format(
+            self.test_user_id,
+            http_response[0]
+        )
+    
+        #check index not contain edge roles after revoke all action
+        self.asserIndexNotCotnainEdgeRolesAfterRevokeAll(
+            self.es_client,
+            self.test_user_id
+        )
+    
+        #recheck roles list via EDGE API request
+        ##check API returns only Default edge role added on the fly
+        http_response = self.edge_role.get_edge_role(self.test_user_id)
+        #check http response code
+        assert http_response[0] in range(200, 299), \
+            "Unable to get edge role for single user -{0}, system returns {1} error".format(
+            self.test_user_id,
+            http_response[0]
+        )
+        #check Business Unit returns as default role for system user
+        self.assertDefaultRoleAddedonTheFly(
+            self.es_client,
+            self.test_user_id,
+>           json.loads(http_response[1])
+        )
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\EdgeRole\test_edge_role.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Tests.EdgeRole.test_edge_role.TestEdgeRole object at 0x03437930>
+es_client = <elasticsearch_client.elasticsearch_client object at 0x04346070>
+user_id = '913ced26-998d-e311-a5b4-00155d28de35'
+curr_roles = ['Test Custom Role 20140218_025113']
+
+    def assertDefaultRoleAddedonTheFly(self, es_client, user_id, curr_roles):
+        user_business_unit = [self._get_system_user_business_unit(es_client, user_id)]
+>       assert set(curr_roles) == set(user_business_unit)
+E       assert set(['Test Cu...0218_025113']) == set(['XREQA'])
+E         Extra items in the left set:
+E         'Test Custom Role 20140218_025113'
+E         Extra items in the right set:
+E         'XREQA'
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\EdgeRoleAssertMixin.py:23: AssertionError
+-------------------------------- Captured log ---------------------------------
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_mapping HTTP/1.1" 200 443615
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.865000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/EdgeRole/913ced26-998d-e311-a5b4-00155d28de35/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: ["Test Custom Role 20140218_025107"]
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/EdgeRole/913ced26-998d-e311-a5b4-00155d28de35/ HTTP/1.1" 200 15
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.534000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1426
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuseredgeroles HTTP/1.1" 404 111
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "HEAD /xre2113qa.nightly/systemuseredgeroles/f532fcb9-dba5-4362-9948-c5cb4d5c3dd0 HTTP/1.1" 200 0
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: DELETE
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/EdgeRole/913ced26-998d-e311-a5b4-00155d28de35/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "DELETE /xre2113qa.nightly/api/EdgeRole/913ced26-998d-e311-a5b4-00155d28de35/ HTTP/1.1" 200 29
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:02.049000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1391
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuseredgeroles HTTP/1.1" 404 111
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "HEAD /xre2113qa.nightly/systemuseredgeroles/f532fcb9-dba5-4362-9948-c5cb4d5c3dd0 HTTP/1.1" 200 0
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/EdgeRole/913ced26-998d-e311-a5b4-00155d28de35/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/EdgeRole/913ced26-998d-e311-a5b4-00155d28de35/ HTTP/1.1" 200 36
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.508000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1393
+#########################Server error trace#########################
+{"index":[],"megs":[]}

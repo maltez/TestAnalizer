@@ -1,0 +1,179 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x043D2610>
+generic_entity_test_criteria = <PyTest.InputTestCriteria.InputTestCriteria.GenericEntityTestCriteria object at 0x04217670>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x034B36B0>
+
+    @pytest.mark.crud
+    def test_update_entity(self, generic_entity_test_criteria, search_api):
+        if isinstance(generic_entity_test_criteria, GenericEntityTestCriteria):
+            entity = generic_entity_test_criteria.api_object
+            entity.es_client = self.es_client
+            _primary_key = self.es_client.edge_metadata[entity.entity_name].get_entity_primary_key_field()
+    
+            if not self.get_from_local_entity_storage(entity.entity_name):
+                #Create entity
+                create_response = list(entity.create_entity(params={}))
+    
+                #Check whether request has been performed successfully
+                self.assertHttpResponseCode(create_response)
+    
+                #Create models
+                create_resp_model = self.create_entity_model(search_api, create_response[1], _primary_key)
+            else:
+                create_resp_model = self.get_from_local_entity_storage(entity.entity_name)["data_model"]
+    
+            #Check whether entity instance present in index
+            self.assertEntityInIndex(
+                search_api,
+                create_resp_model.logicalname,
+                create_resp_model.id,
+                primary_key_field=_primary_key
+            )
+    
+            #Update entity
+            update_response = list(entity.update_entity(params={"id": create_resp_model.id}))
+    
+            try:
+                #Check whether request has been performed successfully
+                self.assertHttpResponseCode(update_response, expected_resp_code=[200, 304])
+    
+                self.assertGenericEntityIncrementalUpdate(
+                    create_resp_model,
+                    entity.request_body_session[-1],
+                    update_response,
+                    search_api,
+                    self.es_client,
+                    _primary_key
+                )
+            except AssertionError, e:
+>               pytest.fail("The entity has not been updated. Inner assertion: {0}".format(e.message))
+E               Failed: The entity has not been updated. Inner assertion: Found data differencies between 2 objects  - {u'awx_companyid': ({u'logicalname': u'account', u'id': u'9014a4ae-c78f-e311-a5b4-00155d28de35'}, {u'logicalname': u'account', u'id': u'617c3606-b756-e311-9314-00155d280475'}), u'awx_areamaximum': (3784.71, 5917.0291951695), u'awx_contactid': ({u'logicalname': u'contact', u'id': u'88024863-9295-e311-aa29-00155d28de35'}, {u'logicalname': u'contact', u'id': u'ad235258-298f-e311-a5b4-00155d28de35'}), u'awx_geozone2id': ({u'logicalname': u'awx_geography', u'id': u'306f906f-6f63-e311-9c41-00155d280475'}, {u'logicalname': u'awx_geography', u'id': u'4381151a-d98f-e311-a5b4-00155d28de35'}), u'awx_propertytype': (u'Industrial', u'Multi-Family'), u'awx_areaminimum': (1912.38, 38980.2099048643), u'awx_propertyclass': (u'A+', u'C')}
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\CRUD\test_entity_crud_action.py:120: Failed
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.277000
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search awx_preference in Index with Id - b53bc712-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_preference
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["b53bc712-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_preference HTTP/1.1" 200 8088
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.450000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - b53bc712-7798-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"awx_rentminimum": null, "awx_propertyclassvalue": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "awx_contactid": {"logicalname": "contact", "id": "ad235258-298f-e311-a5b4-00155d28de35", "name": "TEST Engli TEST Thai"}, "awx_preferenceid": "b53bc712-7798-e311-aa29-00155d28de35", "awx_geozone3id": {"logicalname": "awx_geography", "id": "306f906f-6f63-e311-9c41-00155d280475", "name": "Region1"}, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502", "name": "Metric"}, "awx_geozone1id": {"logicalname": "awx_geography", "id": "4381151a-d98f-e311-a5b4-00155d28de35", "name": "South America"}, "statuscode": "Active", "awx_requiredmoveindate": null, "awx_areamaximum": 5917.0291951695, "awx_rentmaximum": null, "awx_propertytype": "Multi-Family", "awx_pricemaximum": null, "awx_saleorlease": "Sale", "statecode": "Active", "awx_priceminimum": null, "awx_areaminimum": 38980.2099048643, "awx_propertyclass": "C", "awx_companyid": {"logicalname": "account", "id": "617c3606-b756-e311-9314-00155d280475", "name": "Adventure Works (sample)"}, "awx_name": null, "awx_geozone2id": {"logicalname": "awx_geography", "id": "4381151a-d98f-e311-a5b4-00155d28de35", "name": "South America"}, "versionnumber": 2080616}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - b53bc712-7798-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+EntityBase.py              116 INFO     Sending PUT request..
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 3693
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1410
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography HTTP/1.1" 200 2480
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography_1 HTTP/1.1" 404 107
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_geography_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 661
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography HTTP/1.1" 200 2480
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography_1 HTTP/1.1" 404 107
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_geography_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 653
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography HTTP/1.1" 200 2480
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography_1 HTTP/1.1" 404 107
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_geography_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 654
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_language HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_language HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_language/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser HTTP/1.1" 200 3980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser_1 HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/systemuser_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 948
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency HTTP/1.1" 200 2229
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency_1 HTTP/1.1" 404 113
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/transactioncurrency_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 655
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_propertyclassvalue": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "timezoneruleversionnumber": 135, "awx_geozone3iddata": "TEST French / Fran\u00c3\u00a7ais", "awx_contactid": {"logicalname": "contact", "id": "88024863-9295-e311-aa29-00155d28de35"}, "awx_geozone3id": {"logicalname": "awx_geography", "id": "306f906f-6f63-e311-9c41-00155d280475"}, "awx_saleorleasevalue": "TEST French / Fran\u00c3\u00a7ais", "awx_geozone1id": {"logicalname": "awx_geography", "id": "4381151a-d98f-e311-a5b4-00155d28de35"}, "awx_areamaximum": 3784.71, "exchangerate": 4425.18, "awx_saleorleasedata": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "awx_geozone3idvalue": "TEST French / Fran\u00c3\u00a7ais", "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "awx_geozone2idvalue": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "awx_propertytype": "Industrial", "awx_propertyclassdata": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "type": "awx_preference", "modifiedonbehalfby": {"logicalname": "systemuser", "id": "0e78038c-be56-e311-9314-00155d280475"}, "awx_geozone2iddata": "TEST Russian / \u00d0\u00a0\u00d1\u0083\u00d1\u0081\u00d1\u0081\u00d0\u00ba\u00d0\u00b8\u00d0\u00b9", "awx_saleorlease": "Sale", "awx_areaminimum": 1912.38, "awx_propertyclass": "A+", "awx_geozone1iddata": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "awx_companyid": {"logicalname": "account", "id": "9014a4ae-c78f-e311-a5b4-00155d28de35"}, "awx_geozone2id": {"logicalname": "awx_geography", "id": "306f906f-6f63-e311-9c41-00155d280475"}, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502"}, "awx_geozone1idvalue": "TEST nupxo", "importsequencenumber": 161}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: PUT
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/preference/b53bc712-7798-e311-aa29-00155d28de35/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            112 DEBUG    Request body: {"awx_propertyclassvalue": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "timezoneruleversionnumber": 135, "awx_geozone3iddata": "TEST French / Fran\u00c3\u00a7ais", "awx_contactid": {"logicalname": "contact", "id": "88024863-9295-e311-aa29-00155d28de35"}, "awx_geozone3id": {"logicalname": "awx_geography", "id": "306f906f-6f63-e311-9c41-00155d280475"}, "awx_saleorleasevalue": "TEST French / Fran\u00c3\u00a7ais", "awx_geozone1id": {"logicalname": "awx_geography", "id": "4381151a-d98f-e311-a5b4-00155d28de35"}, "awx_areamaximum": 3784.71, "exchangerate": 4425.18, "awx_saleorleasedata": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "awx_geozone3idvalue": "TEST French / Fran\u00c3\u00a7ais", "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "awx_geozone2idvalue": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "awx_propertytype": "Industrial", "awx_propertyclassdata": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "type": "awx_preference", "modifiedonbehalfby": {"logicalname": "systemuser", "id": "0e78038c-be56-e311-9314-00155d280475"}, "awx_geozone2iddata": "TEST Russian / \u00d0\u00a0\u00d1\u0083\u00d1\u0081\u00d1\u0081\u00d0\u00ba\u00d0\u00b8\u00d0\u00b9", "awx_saleorlease": "Sale", "awx_areaminimum": 1912.38, "awx_propertyclass": "A+", "awx_geozone1iddata": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "awx_companyid": {"logicalname": "account", "id": "9014a4ae-c78f-e311-a5b4-00155d28de35"}, "awx_geozone2id": {"logicalname": "awx_geography", "id": "306f906f-6f63-e311-9c41-00155d280475"}, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502"}, "awx_geozone1idvalue": "TEST nupxo", "importsequencenumber": 161}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "PUT /xre2113qa.nightly/api/preference/b53bc712-7798-e311-aa29-00155d28de35/ HTTP/1.1" 200 3238
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:04.495000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_preference
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["b53bc712-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_preference HTTP/1.1" 200 8088
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.226000
+IncrementalUpdateAssertMixin.py  136 ERROR    Unable to get entity Index Version from index. entity-type=awx_preference|entity_id=b53bc712-7798-e311-aa29-00155d28de35 
+IncrementalUpdateAssertMixin.py  138 ERROR    'IndexVersion'
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\IncrementalUpdateAssertMixin.py", line 132, in check_entity_index_version
+    index_version = obj['Results'][0]['IndexVersion']
+KeyError: 'IndexVersion'
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1955
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:34:24.4831851Z","Message":"FaultException: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:34:23.1453","ThreadId":"57 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a) (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."},{"TimeStamp":"2014-02-18T08:34:24.5310336Z","Message":"Inner Fault Message: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:34:23.1453","ThreadId":"57 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:34:24.5681406Z","Message":"Inner Fault Trace Text: [Ascendix.XRE.Plugins: Ascendix.XRE.Plugins.Connection]\r\n[c554d821-470a-e111-a170-000c290b0e27: Ascendix.XRE.Plugins.Connection: PostCreate of awx_listing]\r\n","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:34:23.1453","ThreadId":"57 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:34:24.7282866Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:34:23.1492","ThreadId":"57 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ArgumentException: Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CheckSenderFault(FaultException ex)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CreateEntity(Entity sdkEntity)\r\n   at System.Dynamic.UpdateDelegates.UpdateAndExecute3[T0,T1,T2,TRet](CallSite site, T0 arg0, T1 arg1, T2 arg2)\r\n   at CallSite.Target(Closure , CallSite , EntityControllerBase , ICRMEntity , Object )\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.Post(Object entity)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"}]}

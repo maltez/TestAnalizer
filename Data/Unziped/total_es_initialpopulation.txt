@@ -1,0 +1,133 @@
+----------------------------------------
+Test run start: 2014-02-18 02:53:05.119000
+Test run finished: 2014-02-18 02:56:12.939000
+----------------------------------------
+Test run statistics
+----------------------------------------
+Total = 113
+Errors = 0
+Failures = 23
+Skipped = 0
+Passed = 90
+----------------------------------------
+-------------------- Errors - 0 --------------------
+-------------------- Failed - 23 --------------------
+TestAggregatedEntityCounts:
+1. test_aggregate_count_codes[awx_listing]  FAILED
+2. test_aggregate_count_codes[awx_availability]  FAILED
+3. test_aggregate_count_codes[opportunity]  FAILED
+4. test_aggregate_count_codes[contact]  FAILED
+5. test_related_entity_count[awx_property__related_note]  FAILED
+6. test_related_entity_count[awx_property__related_attachment]  FAILED
+7. test_related_entity_count[awx_property__related_history]  FAILED
+8. test_related_entity_count[awx_availability__related_note]  FAILED
+9. test_related_entity_count[awx_availability__related_attachment]  FAILED
+10. test_related_entity_count[awx_listing__related_note]  FAILED
+11. test_related_entity_count[awx_listing__related_attachment]  FAILED
+12. test_related_entity_count[awx_listing__related_history]  FAILED
+13. test_related_entity_count[opportunity__related_note]  FAILED
+14. test_related_entity_count[opportunity__related_attachment]  FAILED
+15. test_related_entity_count[opportunity__related_activity]  FAILED
+16. test_related_entity_count[awx_lease__related_note]  FAILED
+17. test_related_entity_count[awx_lease__related_attachment]  FAILED
+18. test_related_entity_count[awx_lease__related_history]  FAILED
+19. test_related_entity_count[account__related_note]  FAILED
+20. test_related_entity_count[account__related_attachment]  FAILED
+21. test_related_entity_count[contact__related_note]  FAILED
+22. test_related_entity_count[contact__related_attachment]  FAILED
+TestElasticSearchInitialPopulation:
+23. test_entity_count[activityparty]  FAILED
+-------------------- Skipped - 0 --------------------
+-------------------- Passed - 90 --------------------
+TestAggregatedEntityCounts:
+1. test_aggregate_count_codes[awx_property] PASSED
+2. test_related_entity_count[awx_image__related_annotation] PASSED
+3. test_related_entity_count[awx_property__related_annotation] PASSED
+4. test_aggregate_count_codes[awx_lease] PASSED
+5. test_related_entity_count[awx_property__related_activitypointer] PASSED
+6. test_related_entity_count[awx_property__related_activity] PASSED
+7. test_related_entity_count[awx_property__related_awx_image] PASSED
+8. test_aggregate_count_codes[account] PASSED
+9. test_related_entity_count[awx_property__related_awx_propertysale] PASSED
+10. test_related_entity_count[list__related_listmember] PASSED
+11. test_related_entity_count[awx_property__related_awx_listing] PASSED
+12. test_related_entity_count[awx_property__related_awx_availability] PASSED
+13. test_related_entity_count[awx_property__related_awx_lease] PASSED
+14. test_related_entity_count[awx_property__related_connection] PASSED
+15. test_related_entity_count[awx_property__related_awx_adhoclist] PASSED
+16. test_related_entity_count[awx_property__related_awx_floor] PASSED
+17. test_related_entity_count[awx_availability__related_annotation] PASSED
+18. test_related_entity_count[awx_availability__related_connection] PASSED
+19. test_related_entity_count[awx_property__related_opportunity] PASSED
+20. test_related_entity_count[awx_availability__related_activitypointer] PASSED
+21. test_related_entity_count[awx_availability__related_awx_image] PASSED
+22. test_related_entity_count[awx_availability__related_history] PASSED
+23. test_related_entity_count[awx_availability__related_awx_adhoclist] PASSED
+24. test_related_entity_count[awx_availability__related_activity] PASSED
+25. test_related_entity_count[awx_listing__related_annotation] PASSED
+26. test_related_entity_count[awx_listing__related_connection] PASSED
+27. test_related_entity_count[awx_listing__related_activitypointer] PASSED
+28. test_related_entity_count[awx_listing__related_activity] PASSED
+29. test_related_entity_count[awx_listing__related_opportunity] PASSED
+30. test_related_entity_count[awx_listing__related_awx_availability] PASSED
+31. test_related_entity_count[awx_listing__related_awx_adhoclist] PASSED
+32. test_related_entity_count[opportunity__related_annotation] PASSED
+33. test_related_entity_count[awx_adhoclist__related_awx_adhoclistmember] PASSED
+34. test_related_entity_count[opportunity__related_activitypointer] PASSED
+35. test_related_entity_count[opportunity__related_connection] PASSED
+36. test_related_entity_count[opportunity__related_awx_commission] PASSED
+37. test_related_entity_count[opportunity__related_history] PASSED
+38. test_related_entity_count[opportunity__related_awx_adhoclist] PASSED
+39. test_related_entity_count[awx_lease__related_annotation] PASSED
+40. test_related_entity_count[awx_lease__related_activitypointer] PASSED
+41. test_related_entity_count[awx_lease__related_activity] PASSED
+42. test_related_entity_count[awx_lease__related_awx_adhoclist] PASSED
+43. test_related_entity_count[awx_lease__related_awx_leaseperiod] PASSED
+44. test_related_entity_count[awx_lease__related_connection] PASSED
+45. test_related_entity_count[account__related_annotation] PASSED
+46. test_related_entity_count[account__related_contact] PASSED
+47. test_related_entity_count[account__related_activitypointer] PASSED
+48. test_related_entity_count[account__related_connection] PASSED
+49. test_related_entity_count[account__related_opportunity] PASSED
+50. test_related_entity_count[account__related_history] PASSED
+51. test_related_entity_count[account__related_activity] PASSED
+52. test_related_entity_count[account__related_awx_adhoclist] PASSED
+53. test_related_entity_count[account__related_awx_lease] PASSED
+54. test_related_entity_count[account__related_awx_propertysale] PASSED
+55. test_related_entity_count[account__related_list] PASSED
+56. test_related_entity_count[contact__related_annotation] PASSED
+57. test_related_entity_count[contact__related_activitypointer] PASSED
+58. test_related_entity_count[contact__related_activity] PASSED
+59. test_related_entity_count[contact__related_opportunity] PASSED
+60. test_related_entity_count[contact__related_connection] PASSED
+61. test_related_entity_count[contact__related_history] PASSED
+62. test_related_entity_count[contact__related_list] PASSED
+63. test_related_entity_count[contact__related_awx_preference] PASSED
+64. test_related_entity_count[contact__related_awx_adhoclist] PASSED
+TestElasticSearchInitialPopulation:
+65. test_entity_count[awx_leaseperiod] PASSED
+66. test_entity_count[awx_image] PASSED
+67. test_entity_count[activitypointer] PASSED
+68. test_entity_count[connectionroleassociation] PASSED
+69. test_entity_count[transactioncurrency] PASSED
+70. test_entity_count[awx_adhoclistmember] PASSED
+71. test_entity_count[annotation] PASSED
+72. test_entity_count[awx_preference] PASSED
+73. test_entity_count[awx_propertysale] PASSED
+74. test_entity_count[list] PASSED
+75. test_entity_count[listmember] PASSED
+76. test_entity_count[connectionrole] PASSED
+77. test_entity_count[awx_commission] PASSED
+78. test_entity_count[awx_listing] PASSED
+79. test_entity_count[awx_availability] PASSED
+80. test_entity_count[awx_property] PASSED
+81. test_entity_count[awx_adhoclist] PASSED
+82. test_entity_count[connection] PASSED
+83. test_entity_count[awx_geography] PASSED
+84. test_entity_count[awx_lease] PASSED
+85. test_entity_count[systemuser] PASSED
+86. test_entity_count[opportunity] PASSED
+87. test_entity_count[account] PASSED
+88. test_entity_count[awx_floor] PASSED
+89. test_entity_count[connectionroleobjecttypecode] PASSED
+90. test_entity_count[contact] PASSED

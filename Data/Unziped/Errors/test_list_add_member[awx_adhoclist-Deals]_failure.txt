@@ -1,0 +1,238 @@
+#########################Automated tests trace#########################
+Entity not found in search result, Retrying in 3 seconds...
+Entity not found in search result, Retrying in 6 seconds...
+Entity not found in search result, Retrying in 12 seconds...
+Entity not found in search result, Retrying in 24 seconds...
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x03371390>
+list_entity_test_criteria = <PyTest.CustomFixtures.custom_fixtures.ListEntityTestCriteria object at 0x041F00F0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x03420050>
+
+    @pytest.mark.crud
+    def test_list_add_member(self, list_entity_test_criteria, search_api):
+        if isinstance(list_entity_test_criteria, ListEntityTestCriteria):
+            list_base = list_entity_test_criteria.api_object
+            list_base.es_client = self.es_client
+            list_logical_name = list_entity_test_criteria.entity_name
+            member_type = list_entity_test_criteria.member_type
+            _primary_key = self.es_client.edge_metadata[list_logical_name].CacheSchema.get_fields(
+                flags=["IsKey"])[0]["PropertyName"]
+    
+            ###Create new marketing list###
+            create_response = list_base.create_entity(params={"member_type": member_type})
+    
+            #Check whether request has been performed successfully
+            self.assertHttpResponseCode(create_response)
+    
+            #Create models
+            create_resp_model = self.create_entity_model(
+                response=create_response[1],
+                primary_key_field=_primary_key,
+                search_api=search_api)
+    
+            #check list in index
+            self.assertEntityInIndex(
+                search_api=search_api,
+                entity_type=list_logical_name,
+                entityid=create_resp_model.id
+            )
+    
+            ###Add first member to the marketing list###
+            add_member_response = list_base.add_member_to_list(
+                list_id=create_resp_model.id,
+>               member_logical_name=list_base.list_type_member_mapping(member_type)
+            )
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\ListBased\test_list_based_action.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Implementation.ListBase.ListBase object at 0x04173190>
+list_id = 'bac61398-7998-e311-aa29-00155d28de35', member_logical_name = None
+member_id = None
+
+    def add_member_to_list(self, list_id=None, member_logical_name=None, member_id=None):
+        return self.__modify_list_members(list_id=list_id, member_logical_name=member_logical_name,
+>                                         member_id=member_id, action="AddMember")
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\ListBase.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Implementation.ListBase.ListBase object at 0x04173190>
+list_id = 'bac61398-7998-e311-aa29-00155d28de35', member_logical_name = None
+member_id = None, action = 'AddMember'
+
+    def __modify_list_members(self, list_id=None, member_logical_name=None, member_id=None, action="AddMember"):
+        """
+    
+            @param list_id:
+            @param member_logical_name: e.g contact|account|awx_property|opportunity ...
+            @param member_id: contactid|accountid|awx_propertyid|opportunityid ...
+            @param keywords:
+            @param action: AddMember|DeleteMember
+            @return:
+            """
+        self.logger.info("Add member to list..")
+        self.logger.info("List id: {0}".format(list_id))
+        self.logger.info("Member logical name: {0}".format(member_logical_name))
+        self.logger.info("Member id: {0}".format(member_id))
+    
+        #if member_logical_name is None or member_logical_name not in self.allowed_member_type_values:
+        #    raise AttributeError("Member logical name value is out of valid range")
+        req_body = {
+>           "id": member_id or self.es_client.get_entity_by_type(member_logical_name)[0],
+            "logicalname": member_logical_name
+        }
+E       IndexError: list index out of range
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\ListBase.py:75: IndexError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.329000
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser HTTP/1.1" 200 3980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser_1 HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/systemuser_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 973
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_membertypecode": "Availabilities", "awx_version": 117, "modifiedonbehalfby": {"logicalname": "systemuser", "id": "f303706c-d173-e311-bb29-00155d280475"}, "type": "awx_adhoclist", "timezoneruleversionnumber": 102}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/adhoclist//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"awx_membertypecode": "Deals", "awx_version": 117, "modifiedonbehalfby": {"logicalname": "systemuser", "id": "f303706c-d173-e311-bb29-00155d280475"}, "type": "awx_adhoclist", "timezoneruleversionnumber": 102}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/adhoclist// HTTP/1.1" 200 1398
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.188000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_adhoclist
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["bac61398-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_adhoclist HTTP/1.1" 200 2175
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.598000
+IncrementalUpdateAssertMixin.py  136 ERROR    Unable to get entity Index Version from index. entity-type=awx_adhoclist|entity_id=bac61398-7998-e311-aa29-00155d28de35 
+IncrementalUpdateAssertMixin.py  138 ERROR    list index out of range
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\IncrementalUpdateAssertMixin.py", line 132, in check_entity_index_version
+    index_version = obj['Results'][0]['IndexVersion']
+IndexError: list index out of range
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search awx_adhoclist in Index with Id - bac61398-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_adhoclist
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["bac61398-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_adhoclist HTTP/1.1" 200 2175
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.672000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - bac61398-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search awx_adhoclist in Index with Id - bac61398-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_adhoclist
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["bac61398-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_adhoclist HTTP/1.1" 200 2175
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.555000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - bac61398-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search awx_adhoclist in Index with Id - bac61398-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_adhoclist
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["bac61398-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_adhoclist HTTP/1.1" 200 2175
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.507000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - bac61398-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search awx_adhoclist in Index with Id - bac61398-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_adhoclist
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["bac61398-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_adhoclist HTTP/1.1" 200 2175
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:02.591000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - bac61398-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search awx_adhoclist in Index with Id - bac61398-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_adhoclist
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["bac61398-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_adhoclist HTTP/1.1" 200 2552
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.841000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - bac61398-7998-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"modifiedon": "2014-02-18T08:49:38Z", "awx_membertypecode": "Deals", "awx_adhoclistid": "bac61398-7998-e311-aa29-00155d28de35", "awx_name": null, "versionnumber": 2082828, "statecode": "Active", "statuscode": "Active"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - bac61398-7998-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+ListBase.py                 67 INFO     Add member to list..
+ListBase.py                 68 INFO     List id: bac61398-7998-e311-aa29-00155d28de35
+ListBase.py                 69 INFO     Member logical name: None
+ListBase.py                 70 INFO     Member id: None
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601 HTTP/1.1" 400 92
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601 HTTP/1.1" 400 92
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_count HTTP/1.1" 200 62
+#########################Server error trace#########################
+{"index":[{"TimeStamp":"2014-02-18T08:49:30.0111651Z","Message":"Failed to get entity from crm. Name:awx_preference, ID:8052a932-7998-e311-aa29-00155d28de35. \n\r Exception: Entity with Id: 8052a932-7998-e311-aa29-00155d28de35 not found.","ErrorLevel":"WARN","Longdate":"2014-02-18 02:47:24.1910","ThreadId":"137","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.2865381Z","Message":"Entity is not in index. Type:annotation, id:bb738460-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:48:57.9848","ThreadId":"33 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.4437546Z","Message":"Failed to get entity from crm. Name:contact, ID:ae678166-7998-e311-aa29-00155d28de35. \n\r Exception: Entity with Id: ae678166-7998-e311-aa29-00155d28de35 not found.","ErrorLevel":"WARN","Longdate":"2014-02-18 02:48:59.9457","ThreadId":"33 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.4496136Z","Message":"Failed to get entity from crm. Name:annotation, ID:bb738460-7998-e311-aa29-00155d28de35. \n\r Exception: Entity with Id: bb738460-7998-e311-aa29-00155d28de35 not found.","ErrorLevel":"WARN","Longdate":"2014-02-18 02:49:11.7574","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.5706996Z","Message":"Entity is not in index. Type:annotation, id:bb738460-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:49:11.7877","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.6117126Z","Message":"Failed to get entity from crm. Name:contact, ID:ae678166-7998-e311-aa29-00155d28de35. \n\r Exception: Entity with Id: ae678166-7998-e311-aa29-00155d28de35 not found.","ErrorLevel":"WARN","Longdate":"2014-02-18 02:49:12.5259","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.6214776Z","Message":"Entity is not in index. Type:contact, id:ae678166-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:49:14.0326","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.6497961Z","Message":"Failed to get entity from crm. Name:awx_adhoclist, ID:e6bb668e-7998-e311-aa29-00155d28de35. \n\r Exception: Entity with Id: e6bb668e-7998-e311-aa29-00155d28de35 not found.","ErrorLevel":"WARN","Longdate":"2014-02-18 02:49:14.8441","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:49:30.7484226Z","Message":"Entity is not in index. Type:awx_adhoclist, id:e6bb668e-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:49:14.9838","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""}],"megs":[{"TimeStamp":"2014-02-18T08:49:32.2307496Z","Message":"Entity has not been indexed before the timeout. Consider changing the value of timeout parameter 'WaitCrawlersTimeout' in section 'MegsSettings' of EDGE config","ErrorLevel":"WARN","Longdate":"2014-02-18 02:47:40.7828","ThreadId":"113","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.contact, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:49:32.3225406Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:47:41.9155","ThreadId":"113","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:49:32.4553446Z","Message":"Could not get the value of required parameter 'crm_account_name'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:47:41.9262","ThreadId":"113","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""}]}

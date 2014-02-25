@@ -1,0 +1,90 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x0418BEB0>
+list_entity_test_criteria = <PyTest.CustomFixtures.custom_fixtures.ListEntityTestCriteria object at 0x043080D0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x0418B7D0>
+
+    @pytest.mark.crud
+    def test_list_add_member(self, list_entity_test_criteria, search_api):
+        if isinstance(list_entity_test_criteria, ListEntityTestCriteria):
+            list_base = list_entity_test_criteria.api_object
+            list_base.es_client = self.es_client
+            list_logical_name = list_entity_test_criteria.entity_name
+            member_type = list_entity_test_criteria.member_type
+            _primary_key = self.es_client.edge_metadata[list_logical_name].CacheSchema.get_fields(
+                flags=["IsKey"])[0]["PropertyName"]
+    
+            ###Create new marketing list###
+            create_response = list_base.create_entity(params={"member_type": member_type})
+    
+            #Check whether request has been performed successfully
+>           self.assertHttpResponseCode(create_response)
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\ListBased\test_list_based_action.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x0418BEB0>
+http_response = (400, "Bad input data: A validation error occurred.  The value of 'awx_membertypecode' on record of type 'awx_adhoclist' is outside the valid range.")
+expected_resp_code = [200, 201, 202, 203, 204, 205, ...]
+
+    def assertHttpResponseCode(self, http_response, expected_resp_code=range(200, 299)):
+        """
+            Method raise assertion exception if http response code not in expected response range
+            Http response should be injection as tuple - (resp_code,resp_text)
+            @param http_response:
+            @param expected_resp_code: could be tuple|list|int
+            @return: True or assertion exception
+            """
+        error_msg = "HTTP response code is outside of expected response codes - {0}".format(expected_resp_code)
+        if type(expected_resp_code) == range or type(expected_resp_code) == list:
+>           assert http_response[0] in expected_resp_code, error_msg
+E           AssertionError: HTTP response code is outside of expected response codes - [200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298]
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\GenericEntityAssertMixin.py:22: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.337000
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser HTTP/1.1" 200 3980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser_1 HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/systemuser_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 892
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_membertypecode": "Leases", "awx_version": 171, "modifiedonbehalfby": {"logicalname": "systemuser", "id": "1a1f9655-ad56-e311-a147-00155d280475"}, "type": "awx_adhoclist", "timezoneruleversionnumber": 178}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/adhoclist//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"awx_membertypecode": "Properties", "awx_version": 171, "modifiedonbehalfby": {"logicalname": "systemuser", "id": "1a1f9655-ad56-e311-a147-00155d280475"}, "type": "awx_adhoclist", "timezoneruleversionnumber": 178}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/adhoclist// HTTP/1.1" 400 141
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:00.379000
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:50:00.4400516Z","Message":"FaultException: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:49:59.3003","ThreadId":"98 ","Logger":"AscendixRE.MEGS.ApiControllers.AdHocListController","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: A validation error occurred.  The value of 'awx_membertypecode' on record of type 'awx_adhoclist' is outside the valid range. (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."},{"TimeStamp":"2014-02-18T08:50:00.5777522Z","Message":"Inner Fault Message: A validation error occurred.  The value of 'awx_membertypecode' on record of type 'awx_adhoclist' is outside the valid range.","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:49:59.3003","ThreadId":"98 ","Logger":"AscendixRE.MEGS.ApiControllers.AdHocListController","Exception":""},{"TimeStamp":"2014-02-18T08:50:00.644161Z","Message":"Inner Fault Trace Text: \r\n[Microsoft.Crm.ObjectModel: Microsoft.Crm.ObjectModel.TargetAttributeValidationPlugin]\r\n[c754fdb4-ef2f-4f2c-b49f-186214ab4dcd: TargetAttributeValidationPlugin]\r\n\r\n","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:49:59.3003","ThreadId":"98 ","Logger":"AscendixRE.MEGS.ApiControllers.AdHocListController","Exception":""},{"TimeStamp":"2014-02-18T08:50:00.7584232Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:49:59.3003","ThreadId":"98 ","Logger":"AscendixRE.MEGS.ApiControllers.AdHocListController","Exception":"System.ArgumentException: Bad input data: A validation error occurred.  The value of 'awx_membertypecode' on record of type 'awx_adhoclist' is outside the valid range.\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CheckSenderFault(FaultException ex)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CreateEntity(Entity sdkEntity)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.Post(Object entity)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"}]}

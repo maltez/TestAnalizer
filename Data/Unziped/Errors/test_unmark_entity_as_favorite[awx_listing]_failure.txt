@@ -1,0 +1,207 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x04454F10>
+generic_entity_test_criteria = <PyTest.InputTestCriteria.InputTestCriteria.GenericEntityTestCriteria object at 0x034DB450>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x044547B0>
+
+    @pytest.mark.favorites
+    def test_unmark_entity_as_favorite(self, generic_entity_test_criteria, search_api):
+        entity = generic_entity_test_criteria.api_object
+        entity.es_client = self.es_client
+        _primary_key = self.es_client.edge_metadata[entity.entity_name].get_entity_primary_key_field()
+    
+        ##Create entity
+        #http_response = list(entity.create_entity(params={}))
+        #obj_id = json.loads(http_response[1])[_primary_key]
+        if not self.get_from_local_entity_storage(entity.entity_name):
+            #Create entity
+            http_response = list(entity.create_entity(params={}))
+>           obj_id = json.loads(http_response[1])[_primary_key]
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\CRUD\test_entity_crud_action.py:239: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = 'Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)'
+encoding = None, cls = None, object_hook = None, parse_float = None
+parse_int = None, parse_constant = None, object_pairs_hook = None, kw = {}
+
+    def loads(s, encoding=None, cls=None, object_hook=None, parse_float=None,
+            parse_int=None, parse_constant=None, object_pairs_hook=None, **kw):
+        """Deserialize ``s`` (a ``str`` or ``unicode`` instance containing a JSON
+        document) to a Python object.
+    
+        If ``s`` is a ``str`` instance and is encoded with an ASCII based encoding
+        other than utf-8 (e.g. latin-1) then an appropriate ``encoding`` name
+        must be specified. Encodings that are not ASCII based (such as UCS-2)
+        are not allowed and should be decoded to ``unicode`` first.
+    
+        ``object_hook`` is an optional function that will be called with the
+        result of any object literal decode (a ``dict``). The return value of
+        ``object_hook`` will be used instead of the ``dict``. This feature
+        can be used to implement custom decoders (e.g. JSON-RPC class hinting).
+    
+        ``object_pairs_hook`` is an optional function that will be called with the
+        result of any object literal decoded with an ordered list of pairs.  The
+        return value of ``object_pairs_hook`` will be used instead of the ``dict``.
+        This feature can be used to implement custom decoders that rely on the
+        order that the key and value pairs are decoded (for example,
+        collections.OrderedDict will remember the order of insertion). If
+        ``object_hook`` is also defined, the ``object_pairs_hook`` takes priority.
+    
+        ``parse_float``, if specified, will be called with the string
+        of every JSON float to be decoded. By default this is equivalent to
+        float(num_str). This can be used to use another datatype or parser
+        for JSON floats (e.g. decimal.Decimal).
+    
+        ``parse_int``, if specified, will be called with the string
+        of every JSON int to be decoded. By default this is equivalent to
+        int(num_str). This can be used to use another datatype or parser
+        for JSON integers (e.g. float).
+    
+        ``parse_constant``, if specified, will be called with one of the
+        following strings: -Infinity, Infinity, NaN, null, true, false.
+        This can be used to raise an exception if invalid JSON numbers
+        are encountered.
+    
+        To use a custom ``JSONDecoder`` subclass, specify it with the ``cls``
+        kwarg; otherwise ``JSONDecoder`` is used.
+    
+        """
+        if (cls is None and encoding is None and object_hook is None and
+                parse_int is None and parse_float is None and
+                parse_constant is None and object_pairs_hook is None and not kw):
+>           return _default_decoder.decode(s)
+
+C:\EdgeDeployment\python27\lib\json\__init__.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x02BD33B0>
+s = 'Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)'
+_w = <built-in method match of _sre.SRE_Pattern object at 0x02A59638>
+
+    def decode(self, s, _w=WHITESPACE.match):
+        """Return the Python representation of ``s`` (a ``str`` or ``unicode``
+            instance containing a JSON document)
+    
+            """
+>       obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+
+C:\EdgeDeployment\python27\lib\json\decoder.py:365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x02BD33B0>
+s = 'Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+            beginning with a JSON document) and return a 2-tuple of the Python
+            representation and the index in ``s`` where the document ended.
+    
+            This can be used to decode a JSON document from a string that may
+            have extraneous data at the end.
+    
+            """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration:
+>           raise ValueError("No JSON object could be decoded")
+E           ValueError: No JSON object could be decoded
+
+C:\EdgeDeployment\python27\lib\json\decoder.py:383: ValueError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.631000
+EntityBase.py               96 INFO     Sending POST request..
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography HTTP/1.1" 200 2480
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography_1 HTTP/1.1" 404 107
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_geography_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 662
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography HTTP/1.1" 200 2480
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_geography_1 HTTP/1.1" 404 107
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_geography_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 661
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2145
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2132
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser HTTP/1.1" 200 3980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser_1 HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/systemuser_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 951
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1955
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1977
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_property HTTP/1.1" 200 15232
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_property_1 HTTP/1.1" 404 106
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_property_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 993
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 122
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency HTTP/1.1" 200 2229
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency_1 HTTP/1.1" 404 113
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/transactioncurrency_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 654
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_vacantarea": 2476.65, "awx_listingbrokercompanyid": {"logicalname": "account", "id": "375802ba-0290-e311-a5b4-00155d28de35"}, "awx_ownerid": {"logicalname": "account", "id": "035f535e-1e96-e311-aa29-00155d28de35"}, "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "type": "awx_listing", "awx_listingwebsite": "TEST French / Fran\u00c3\u00a7ais", "awx_propertyid": {"logicalname": "awx_property", "id": "c4ff382e-0f94-e311-a5b4-00155d28de35"}, "awx_listingstatus": "Closed", "awx_geozone2id": {"logicalname": "awx_geography", "id": "4381151a-d98f-e311-a5b4-00155d28de35"}, "awx_saleorlease": "Lease", "awx_propertysubtype": "Neighborhood Center", "awx_listingbrokercontactid": {"logicalname": "contact", "id": "ecb6fd0f-d594-e311-aa29-00155d28de35"}, "awx_propertytype": "Technical Facilities", "awx_propertyusetype": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "awx_specialusetype": "Subdivision-Residential", "awx_listingbrokerid": {"logicalname": "systemuser", "id": "4dfde9db-9c8d-e311-a5b4-00155d28de35"}, "awx_locationdescription": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "awx_geozone1id": {"logicalname": "awx_geography", "id": "c9e67196-d88f-e311-a5b4-00155d28de35"}, "awx_saletype": "Investor", "awx_ownerlandlordcontactid": {"logicalname": "contact", "id": "364ee42d-1594-e311-a5b4-00155d28de35"}}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/listing//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"awx_vacantarea": 2476.65, "awx_listingbrokercompanyid": {"logicalname": "account", "id": "375802ba-0290-e311-a5b4-00155d28de35"}, "awx_ownerid": {"logicalname": "account", "id": "035f535e-1e96-e311-aa29-00155d28de35"}, "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "type": "awx_listing", "awx_listingwebsite": "TEST French / Fran\u00c3\u00a7ais", "awx_propertyid": {"logicalname": "awx_property", "id": "c4ff382e-0f94-e311-a5b4-00155d28de35"}, "awx_listingstatus": "Closed", "awx_geozone2id": {"logicalname": "awx_geography", "id": "4381151a-d98f-e311-a5b4-00155d28de35"}, "awx_saleorlease": "Lease", "awx_propertysubtype": "Neighborhood Center", "awx_listingbrokercontactid": {"logicalname": "contact", "id": "ecb6fd0f-d594-e311-aa29-00155d28de35"}, "awx_propertytype": "Technical Facilities", "awx_propertyusetype": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "awx_specialusetype": "Subdivision-Residential", "awx_listingbrokerid": {"logicalname": "systemuser", "id": "4dfde9db-9c8d-e311-a5b4-00155d28de35"}, "awx_locationdescription": "TEST Korean / \u00ec\u009c\u0084\u00ed\u0082\u00a4\u00eb\u00b0\u00b1\u00ea\u00b3\u00bc:\u00eb\u008c\u0080\u00eb\u00ac\u00b8", "awx_geozone1id": {"logicalname": "awx_geography", "id": "c9e67196-d88f-e311-a5b4-00155d28de35"}, "awx_saletype": "Investor", "awx_ownerlandlordcontactid": {"logicalname": "contact", "id": "364ee42d-1594-e311-a5b4-00155d28de35"}}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/listing// HTTP/1.1" 400 161
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:00.176000
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:43:19.8698166Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:40:55.7598","ThreadId":"98 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.1324951Z","Message":"Could not get the value of required parameter 'crm_account_website'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:01.0320","ThreadId":"10 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.3043591Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:08.7903","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.4596226Z","Message":"Could not get the value of required parameter 'crm_account_name'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:08.7903","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.5045416Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:27.0313","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.5318836Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:27.0684","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.5846146Z","Message":"Could not get the value of required parameter 'crm_account_website'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:30.9832","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.7398781Z","Message":"Could not get the value of required parameter 'crm_email'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:35.6186","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.7555021Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:35.6186","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.8980711Z","Message":"Could not get the value of required parameter 'crm_account_name'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:35.6186","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:20.9615436Z","Message":"Could not get the value of required parameter 'crm_email'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:35.6421","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.1168071Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:35.6421","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.1402431Z","Message":"Could not get the value of required parameter 'crm_account_name'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:35.6421","ThreadId":"109","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.1470786Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:47.4899","ThreadId":"29 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.1968801Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:47.5075","ThreadId":"29 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.2349636Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:47.5270","ThreadId":"29 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.2593761Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:41:47.5456","ThreadId":"29 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.2896476Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:07.5170","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.3306606Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:07.5463","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.3824151Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:07.5697","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.4165926Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:07.5902","ThreadId":"6  ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.4566291Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:43.8428","ThreadId":"55 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.4800651Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.0402","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.4859241Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.0578","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.5181486Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.0763","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.5503731Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.0958","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.5777151Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.1173","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.6177516Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.1388","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.6792711Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.1603","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.7134486Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.1808","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.7398141Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.2023","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.7544616Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.2238","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.7632501Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.2443","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.8081691Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.2648","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.8140281Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.2863","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.8941011Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.3077","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.9253491Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.3292","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:21.9595266Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:42:57.3517","ThreadId":"80 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.0288581Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.6291","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.1138136Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.6477","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.3032546Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.6692","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.4878131Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.6926","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.5503091Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.7112","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.5805806Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.7248","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.7426796Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:43:10.7502","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:43:22.7700216Z","Message":"FaultException: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.2225","ThreadId":"6  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a) (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."},{"TimeStamp":"2014-02-18T08:43:22.9555566Z","Message":"Inner Fault Message: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.2225","ThreadId":"6  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:43:23.0141466Z","Message":"Inner Fault Trace Text: [Ascendix.XRE.Plugins: Ascendix.XRE.Plugins.Connection]\r\n[c554d821-470a-e111-a170-000c290b0e27: Ascendix.XRE.Plugins.Connection: PostCreate of awx_listing]\r\n","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.2244","ThreadId":"6  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:43:23.3393211Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.2244","ThreadId":"6  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_listing, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ArgumentException: Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CheckSenderFault(FaultException ex)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CreateEntity(Entity sdkEntity)\r\n   at System.Dynamic.UpdateDelegates.UpdateAndExecute3[T0,T1,T2,TRet](CallSite site, T0 arg0, T1 arg1, T2 arg2)\r\n   at CallSite.Target(Closure , CallSite , EntityControllerBase , ICRMEntity , Object )\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.Post(Object entity)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"},{"TimeStamp":"2014-02-18T08:43:23.4701721Z","Message":"FaultException: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.4480","ThreadId":"97 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_property, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a) (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."},{"TimeStamp":"2014-02-18T08:43:23.5229031Z","Message":"Inner Fault Message: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.4480","ThreadId":"97 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_property, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:43:23.5785636Z","Message":"Inner Fault Trace Text: [Ascendix.XRE.Plugins: Ascendix.XRE.Plugins.Connection]\r\n[9bda0099-450a-e111-a170-000c290b0e27: Ascendix.XRE.Plugins.Connection: PostCreate of awx_property]\r\n","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.4480","ThreadId":"97 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_property, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:43:23.7455451Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:43:17.4480","ThreadId":"97 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_property, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ArgumentException: Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CheckSenderFault(FaultException ex)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CreateEntity(Entity sdkEntity)\r\n   at System.Dynamic.UpdateDelegates.UpdateAndExecute3[T0,T1,T2,TRet](CallSite site, T0 arg0, T1 arg1, T2 arg2)\r\n   at CallSite.Target(Closure , CallSite , EntityControllerBase , ICRMEntity , Object )\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.Post(Object entity)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"}]}

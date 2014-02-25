@@ -1,0 +1,90 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x041E3BD0>
+list_entity_test_criteria = <PyTest.CustomFixtures.custom_fixtures.ListEntityTestCriteria object at 0x041F0110>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x041E30D0>
+
+    @pytest.mark.crud
+    def test_list_add_member(self, list_entity_test_criteria, search_api):
+        if isinstance(list_entity_test_criteria, ListEntityTestCriteria):
+            list_base = list_entity_test_criteria.api_object
+            list_base.es_client = self.es_client
+            list_logical_name = list_entity_test_criteria.entity_name
+            member_type = list_entity_test_criteria.member_type
+            _primary_key = self.es_client.edge_metadata[list_logical_name].CacheSchema.get_fields(
+                flags=["IsKey"])[0]["PropertyName"]
+    
+            ###Create new marketing list###
+            create_response = list_base.create_entity(params={"member_type": member_type})
+    
+            #Check whether request has been performed successfully
+>           self.assertHttpResponseCode(create_response)
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\ListBased\test_list_based_action.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x041E3BD0>
+http_response = (400, "Bad input data: A validation error occurred.  The value of 'awx_membertypecode' on record of type 'awx_adhoclist' is outside the valid range.")
+expected_resp_code = [200, 201, 202, 203, 204, 205, ...]
+
+    def assertHttpResponseCode(self, http_response, expected_resp_code=range(200, 299)):
+        """
+            Method raise assertion exception if http response code not in expected response range
+            Http response should be injection as tuple - (resp_code,resp_text)
+            @param http_response:
+            @param expected_resp_code: could be tuple|list|int
+            @return: True or assertion exception
+            """
+        error_msg = "HTTP response code is outside of expected response codes - {0}".format(expected_resp_code)
+        if type(expected_resp_code) == range or type(expected_resp_code) == list:
+>           assert http_response[0] in expected_resp_code, error_msg
+E           AssertionError: HTTP response code is outside of expected response codes - [200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298]
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\GenericEntityAssertMixin.py:22: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.365000
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser HTTP/1.1" 200 3980
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/systemuser_1 HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/systemuser_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 898
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_membertypecode": "Deals", "awx_version": 189, "modifiedonbehalfby": {"logicalname": "systemuser", "id": "8e4850a8-bd56-e311-9314-00155d280475"}, "type": "awx_adhoclist", "timezoneruleversionnumber": 127}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/adhoclist//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'6569219054d540fb97925f7d0b93ffb3', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"awx_membertypecode": "Listings", "awx_version": 189, "modifiedonbehalfby": {"logicalname": "systemuser", "id": "8e4850a8-bd56-e311-9314-00155d280475"}, "type": "awx_adhoclist", "timezoneruleversionnumber": 127}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/adhoclist// HTTP/1.1" 400 141
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:00.441000
+#########################Server error trace#########################
+{"index":[{"TimeStamp":"2014-02-18T08:49:55.4086084Z","Message":"Error while preloading access rights for system user '913ced26-998d-e311-a5b4-00155d28de35' fot the 'awx_adhoclistmember' entity, ids: c71027ba-7998-e311-aa29-00155d28de35","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:49:50.9807","ThreadId":"152","Logger":"AscendixRE.Search.Crawler.Implementation.Consumers.PrefetchAccessRights","Exception":"AscendixRE.DynamicCRM.DAL.Contract.Errors.EntityNotFoundException: awx_adhoclistmember With Id = c71027ba-7998-e311-aa29-00155d28de35 Does Not Exist ---> System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: awx_adhoclistmember With Id = c71027ba-7998-e311-aa29-00155d28de35 Does Not Exist\r\n\r\nServer stack trace: \r\n   at System.ServiceModel.Channels.ServiceChannel.HandleReply(ProxyOperationRuntime operation, ProxyRpc& rpc)\r\n   at System.ServiceModel.Channels.ServiceChannel.Call(String action, Boolean oneway, ProxyOperationRuntime operation, Object[] ins, Object[] outs, TimeSpan timeout)\r\n   at System.ServiceModel.Channels.ServiceChannelProxy.InvokeService(IMethodCallMessage methodCall, ProxyOperationRuntime operation)\r\n   at System.ServiceModel.Channels.ServiceChannelProxy.Invoke(IMessage message)\r\n\r\nException rethrown at [0]: \r\n   at System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg)\r\n   at System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type)\r\n   at Microsoft.Xrm.Sdk.IOrganizationService.Execute(OrganizationRequest request)\r\n   at Microsoft.Xrm.Sdk.Client.OrganizationServiceProxy.ExecuteCore(OrganizationRequest request)\r\n   at Microsoft.Xrm.Client.Services.OrganizationService.InnerOrganizationService.UsingService[TResult](Func`2 action)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Entities.EntityRepository`1.<>c__DisplayClass1d.<>c__DisplayClass20.<GetUserAccessRights>b__1c(SystemUserEntityLink systemUserEntityLink)\r\n   at System.Linq.Enumerable.ToDictionary[TSource,TKey,TElement](IEnumerable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Entities.EntityRepository`1.<>c__DisplayClass1d.<GetUserAccessRights>b__1a(ICRMQueryProvider queryProvider)\r\n   at AscendixRE.DynamicCRM.DAL.Contract.Data.Query.QueryProviderFactoryExtension.UsingQueryProvider[TResult](IQueryProviderFactory dalFactory, Func`2 action)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Entities.EntityRepository`1.GetUserAccessRights(IEnumerable`1 systemUserEntityLinks)\r\n   at Castle.Proxies.Invocations.IEntityRepository_GetUserAccessRights.InvokeMethodOnTarget()\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.EdgeCrudEventInterceptor.Intercept(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.CRMErrorCodesInterceptor.Intercept(IInvocation invocation)\r\n   --- End of inner exception stack trace ---\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.CRMErrorCodesInterceptor.Intercept(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.Profiling.Implementation.Profiler`1.Invoke(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at Castle.Proxies.IEntityRepository`1Proxy_21.GetUserAccessRights(IEnumerable`1 systemUserEntityLinks)\r\n   at AscendixRE.DynamicCRM.DAL.Contract.Data.Security.SecurityCacheExtensions.Get[TKey,TValue](ISecurityCache`2 securityCache, IEnumerable`1 keys, Func`2 fallback)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Security.RightsChecker`1.GetAccessRightsWithCache(IEnumerable`1 entityIds, Guid systemUserId)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Security.RightsChecker`1.GetAccessRights(ICollection`1 entityIds, Guid systemUserId)\r\n   at AscendixRE.Search.Crawler.Implementation.Consumers.PrefetchAccessRights.<>c__DisplayClass1.<PopulateAccessRights>b__0(IRightsChecker rightsChecker)"}],"megs":[]}

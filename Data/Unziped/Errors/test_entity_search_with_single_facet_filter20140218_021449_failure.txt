@@ -1,0 +1,152 @@
+#########################Automated tests trace#########################
+
+self = <Search.Tests.SimpleSearch.Facets.test_facet_fields.TestFacetFields object at 0x03FB9570>
+entity_with_test_field = <PyTest.InputTestCriteria.InputTestCriteria.EntityWithField object at 0x03691CD0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x047D2D70>
+
+    @pytest.mark.xre_demo
+    @params(["SingleFacetFilter"])
+    def test_entity_search_with_single_facet_filter(self, entity_with_test_field, search_api):
+        if isinstance(entity_with_test_field, EntityWithField):
+            entity_type = entity_with_test_field.entity_type
+            facet_logical_name = entity_with_test_field.field_name
+            field_metadata = entity_with_test_field.field_metadata
+            term_facet_size = entity_with_test_field.term_facet_size
+    
+            search_api.entity_name = entity_type
+    
+            self.logger.debug(entity_with_test_field.to_str_repr())
+    
+            try:
+                res1_code, res1_text = search_api.send_search_request(
+                    request_body=SearchRequest(
+                        TermFacetSize=term_facet_size
+                    ).to_json()
+                )
+                self.assertSearchResponse(res1_code, res1_text)
+    
+                search_response = SearchResponse(json.loads(res1_text))
+                facet_type, facet_match = search_response.get_facet_match_details_by_field_name(facet_logical_name)
+    
+                if not facet_match:
+                    raise FacetNotFound("Facet with logical name -{0}- not found in search response"
+                                        "for entity -{1}-".format(facet_logical_name, entity_type))
+    
+                self.assertFacetItemCollectionIsEmpty(
+                    facet_match,
+                    search_response.total,
+                    field_metadata
+                )
+                test_facet_collection = self._create_test_facet_collection_base_on_facet_match(facet_match)
+    
+                for test_facet in test_facet_collection:
+                    self.logger.info("Testing facet sample: {0}".format(test_facet.to_request_filter_str_repr()))
+    
+                    search_api.entity_name = entity_type
+    
+                    search_request_body = SearchRequest(
+                        Size=5,
+                        TermFacetSize=term_facet_size
+                    )
+                    search_request_body.add_facet_filters(
+                        facet_type,
+                        facet_logical_name,
+                        test_facet
+                    )
+    
+                    facet_search_resp_code, facet_search_resp_text = search_api.send_search_request(
+                        request_body=search_request_body.to_json()
+                    )
+                    self.assertSearchResponse(
+                        facet_search_resp_code,
+                        facet_search_resp_text
+                    )
+    
+                    facet_search_response = SearchResponse(json.loads(facet_search_resp_text))
+    
+                    self.logger.debug("Response Total value: {0}".format(facet_search_response.total))
+    
+                    self.assertSearchWithFacets(
+                        self.es_client,
+                        search_api,
+                        term_facet_size,
+                        facet_logical_name,
+                        facet_type,
+                        test_facet,
+                        facet_search_response,
+                        field_metadata
+                    )
+            except FacetNotFound, e:
+                self.logger.exception(e)
+                pytest.fail(e.message)
+    
+            except FacetCountException, e:
+                self.logger.exception(e)
+                if term_facet_size and term_facet_size == sys.maxint:
+                    pytest.fail("Facets not working for {0}. Inner assertion: {1}".format(
+                        str(entity_with_test_field),
+                        e.message
+                    ))
+                else:
+                    pytest.skip(e.message)
+            except AssertionError, e:
+                self.logger.exception(e)
+                pytest.fail("Facets not working for {0}. Inner assertion: {1}".format(
+                    str(entity_with_test_field),
+>                   e.message
+                ))
+E               Failed: Facets not working for awx_listing__awx_listingawx_propertyidawx_property.coords. Inner assertion: Response code not in (200,299). Request status is 400
+
+C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\Facets\test_facet_fields.py:124: Failed
+-------------------------------- Captured log ---------------------------------
+test_facet_fields.py        32 INFO     
+Starting test: test_entity_search_with_single_facet_filter
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.679000
+test_facet_fields.py        46 DEBUG    
+---Input data---
+test_entity_type=awx_listing
+field_name=awx_listingawx_propertyidawx_property.coords
+term_facet_size=25
+field_metadata={'facet_type': 'SimpleFacet', 'metadata': {u'Sort': True, u'Search': False, u'MeasureType': u'None', u'DisplayName': u'(Latitude, Longitude)', u'Description': u'This field combines two CRM fields: Latitude for the property. and Longitute for the property.', u'EdgeNGram': False, u'IsKey': False, u'ReferencesTo': None, u'MixedSearchAlias': None, u'LatitudeName': u'awx_latitude', u'Facet': True, u'Result': True, u'Type': u'GeoPoint', u'LogicalName': 'awx_listingawx_propertyidawx_property.coords', u'LongitudeName': u'awx_longitude'}}
+---------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_listing
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": [], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 25}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_listing HTTP/1.1" 200 21982
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.783000
+test_facet_fields.py        71 INFO     Testing facet sample: {u'IsChecked': True, u'Range': {u'To': None, u'From': 16.0}}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_listing
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [{"Items": [{"IsChecked": true, "Range": {"To": null, "From": 16.0}}], "LogicalName": "awx_listingawx_propertyidawx_property.coords", "Pin": {"lat": -27.47018, "lon": 153.02911}}], "ScriptFilters": [], "Ids": [], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 5}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_listing HTTP/1.1" 400 77
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:00.478000
+test_facet_fields.py       121 ERROR    Response code not in (200,299). Request status is 400
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\Facets\test_facet_fields.py", line 90, in test_entity_search_with_single_facet_filter
+    facet_search_resp_text
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Assertions\SearchBaseAssertMixin.py", line 21, in assertSearchResponse
+    "Response code not in (200,299). Request status is {0}".format(response_code)
+AssertionError: Response code not in (200,299). Request status is 400
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:14:51.5851964Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:14:49.1339","ThreadId":"101","Logger":"AscendixRE.MEGS.ApiControllers.SearchController","Exception":"System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.\r\nParameter name: pin\r\n   at AscendixRE.Elastic.Indexing.Implementation.Infrastructure.NestUtils.CreateGeoDistanceRange[T](String fieldName, GeoDistanceFilter filter, GeoPoint pin)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Infrastructure.NestUtils.<>c__DisplayClass34`1.<CreateGeoDistanceFacetFilterBuilder>b__32(GeoDistanceFilter i)\r\n   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()\r\n   at System.Linq.Buffer`1..ctor(IEnumerable`1 source)\r\n   at System.Linq.Enumerable.ToArray[TSource](IEnumerable`1 source)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Infrastructure.NestUtils.Bool[T](FilterDescriptor`1 src, Func`3 aggregate, IEnumerable`1 filters)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Infrastructure.NestUtils.Bool[T](FilterDescriptor`1 src, Func`3 aggregate, IEnumerable`1 filters)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Infrastructure.NestUtils.Bool[T](FilterDescriptor`1 src, Func`3 aggregate, IEnumerable`1 filters)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Query.Implementation.IndexQuery`2.<>c__DisplayClass94.<ExecuteRequest>b__91(FilterDescriptor`1 filter)\r\n   at Nest.SearchDescriptor`1.Filter(Func`2 filter)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Query.Implementation.IndexQuery`2.<>c__DisplayClass94.<ExecuteRequest>b__90(SearchDescriptor`1 sd)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Query.Implementation.IndexQuery`2.<>c__DisplayClass96.<ExecuteRequest>b__93(SearchDescriptor`1 sd)\r\n   at Nest.ElasticClient.Search[T](Func`2 searcher)\r\n   at Castle.Proxies.Invocations.IElasticClient_Search_4.InvokeMethodOnTarget()\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.HAL.Implementation.HighAvailabilityAspect`2.Intercept(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at Castle.Proxies.IElasticClientProxy.Search[T](Func`2 searcher)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Query.Implementation.IndexQuery`2.<ExecuteRequest>d__98.MoveNext()\r\n   at AscendixRE.Elastic.Indexing.Implementation.Query.Results.Common.BaseResultsProducer`2.Produce(QueryResultContext`1 dataContainer)\r\n   at AscendixRE.Elastic.Indexing.Implementation.Query.Implementation.IndexQuery`2.Search(QueryRequest request, SystemUser systemUser)\r\n   at Castle.Proxies.Invocations.IIndexQuery_Search.InvokeMethodOnTarget()\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.SOMInterceptor.<>c__DisplayClass1.<Intercept>b__0(ISomQueryRequestConverter somQueryRequestConverter)\r\n   at AscendixRE.Windsor.Utils.Factories.TypedFactoryExtension.<>c__DisplayClass1`1.<WithInstance>b__0(TInstance instance)\r\n   at AscendixRE.Windsor.Utils.Factories.TypedFactoryExtension.WithInstance[TInstance,TResult](ITypedFactory`1 factory, Type type, Func`2 func)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.Profiling.Implementation.Profiler`1.Invoke(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at Castle.Proxies.IIndexQuery`2Proxy_5.Search(QueryRequest request, SystemUser systemUser)\r\n   at AscendixRE.MEGS.ApiControllers.SearchController.UsingIndexQuery[TResult](String id, Func`2 func)\r\n   at lambda_method(Closure , Object , Object[] )\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"}]}

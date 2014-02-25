@@ -1,0 +1,156 @@
+#########################Automated tests trace#########################
+
+self = <Tests.InitialPopulation.RelatedEntityCounts.test_aggregate_counts.TestAggregatedEntityCounts instance at 0x03654F30>
+entity_with_related_counts = <PyTest.InputTestCriteria.InputTestCriteria.EntityWithField object at 0x036A60D0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x033AE730>
+
+    @pytest.mark.xre_demo
+    def test_related_entity_count(self, entity_with_related_counts, search_api):
+        entity_name = entity_with_related_counts.entity_type
+        fieldname = entity_with_related_counts.field_name
+        field_metadata = entity_with_related_counts.field_metadata
+    
+        genericentity = EntityBase(
+            entity_name=entity_name
+        )
+        genericentity.authorization_token = self.authorization_token
+        genericentity.base_url = self.env_config.get_path("MEGS", "url")
+    
+        self.search_api.entity_name = entity_name
+        #self.search_api = SearchAPI(self.env_config,entity_name)
+        #self.search_api.set_authorization_token(self.authorization_token)
+    
+        custom_query = self.add_custom_query(field_metadata["DisplayName"])
+        (entity_id, target_entity_id) = self.es_client.get_entity_with_related_entities(
+            firstclass=entity_name,
+            secondclass=field_metadata["TargetEntityName"],
+>           custom_query=custom_query
+        )
+
+C:\EdgeDeployment\FunctionalTests\src\Elasticsearch\Tests\InitialPopulation\RelatedEntityCounts\test_aggregate_counts.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <elasticsearch_client.elasticsearch_client object at 0x0347AD50>
+firstclass = 'awx_lease', secondclass = 'activitypointer'
+custom_query = {'occur_type': 'must_not', 'query': <pyes.query.TermQuery object at 0x033AE7B0>}
+custom_filter = None, _size = 1, _start = 0
+
+    def get_entity_with_related_entities(
+            self,
+            firstclass='',
+            secondclass='',
+            custom_query=None,
+            custom_filter=None,
+            _size=1,
+            _start=0):
+        try:
+            found_relation = False
+            ids = []
+            related_ids = []
+            related_field_logical_names = self.get_entity_relation_field(
+                firstclass,
+                self.validate_secondclass_entity(secondclass)
+            )
+    
+            for relation_field_name in related_field_logical_names:
+                #while not found_relation:
+                prepared_query = pyes.BoolQuery()
+                prepared_filter = pyes.filters.BoolFilter()
+                if secondclass in self.activities:
+                    prepared_query.add_must(
+                        pyes.TermQuery("_type", self.check_entity_mapping("activitypointer")))
+                    prepared_query.add_must(
+                        pyes.TermQuery("activitytypecode", secondclass))
+                    prepared_query.add_must(
+                        pyes.TermQuery(
+                            "{0}.logicalname".format(relation_field_name),
+                            firstclass
+                        )
+                    )
+                elif secondclass == "avajll_jllcontact":
+                    prepared_query.add_must(
+                        pyes.TermQuery("_type", self.check_entity_mapping("connection")))
+                    prepared_query.add_must(
+                        pyes.TermQuery("record2roleid.name", "JLL Contact (Related)"))
+                    prepared_query.add_must(
+                        pyes.TermQuery("record2id.logicalname", firstclass))
+                else:
+                    prepared_query.add_must(
+                        pyes.TermQuery(
+                            "_type",
+                            self.check_entity_mapping(self.validate_secondclass_entity(secondclass))))
+                    prepared_query.add_must(pyes.TermQuery(
+                        "{0}.logicalname".format(relation_field_name),
+                        firstclass
+                    ))
+    
+                if custom_query:
+                    prepared_query = self.add_custom_query_to_existing(prepared_query, custom_query)
+                if custom_filter:
+                    prepared_filter = self.add_custom_query_to_existing(prepared_filter, custom_filter)
+    
+                if not prepared_filter.is_empty():
+                    qb = pyes.FilteredQuery(prepared_query, prepared_filter)
+                else:
+                    qb = prepared_query
+    
+                results = self.connection.search(query=qb, size=_size, start=_start)
+                if len(results) == 0:
+                    #if last iteration
+                    if related_field_logical_names[-1] == relation_field_name:
+                        assert False, "Not found such relation in index - {0} - {1}".format(
+                            firstclass,
+                            secondclass
+                        )
+    
+                try:
+                    #parse search result
+                    for result in results:
+                        if isinstance(result[relation_field_name], dict):
+                            if result[relation_field_name]["logicalname"] == firstclass:
+                                ids.append(result[relation_field_name]["id"])
+                                related_ids.append(str(result["id"]))
+                        else:
+                            ids.append(str(result[relation_field_name]))
+                            related_ids.append(str(result["id"]))
+                except Exception:
+                    pass
+    
+                if ids:
+                    for _id in ids:
+                        if not self.get_entity_by_id(_id):
+                            ids.remove(_id)
+                    if ids:
+                        break
+    
+            if not ids:
+                assert False, "Not found such relation in index: {0} - {1}".format(
+                    firstclass,
+                    secondclass
+                )
+    
+            if len(ids) == 1:
+                return ids[0], related_ids[0]
+            else:
+                return ids, related_ids
+    
+        except Exception, e:
+>           raise e
+E           AssertionError: Not found such relation in index - awx_lease - activitypointer
+
+C:\EdgeDeployment\FunctionalTests\src\Elasticsearch\DAL\elasticsearch_client.py:272: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2124
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.685000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 124
+#########################Server error trace#########################
+{"index":[],"megs":[]}

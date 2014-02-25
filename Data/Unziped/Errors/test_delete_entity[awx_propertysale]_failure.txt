@@ -1,0 +1,232 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x043E13D0>
+generic_entity_test_criteria = <PyTest.InputTestCriteria.InputTestCriteria.GenericEntityTestCriteria object at 0x041F5AD0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x043E1610>
+
+    @pytest.mark.crud
+    def test_delete_entity(self, generic_entity_test_criteria, search_api):
+        if isinstance(generic_entity_test_criteria, GenericEntityTestCriteria):
+            entity = generic_entity_test_criteria.api_object
+            entity.es_client = self.es_client
+            _primary_key = self.es_client.edge_metadata[entity.entity_name].get_entity_primary_key_field()
+    
+            ##Create entity
+            #http_response = list(entity.create_entity(params={}))
+            #obj_id = json.loads(http_response[1])[_primary_key]
+            if not self.get_from_local_entity_storage(entity.entity_name):
+                #Create entity
+                http_response = list(entity.create_entity(params={}))
+>               obj_id = json.loads(http_response[1])[_primary_key]
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\CRUD\test_entity_crud_action.py:290: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = "Bad input data: A validation error occurred.  The value of 'awx_capratepercent' on record of type 'awx_propertysale' is outside the valid range."
+encoding = None, cls = None, object_hook = None, parse_float = None
+parse_int = None, parse_constant = None, object_pairs_hook = None, kw = {}
+
+    def loads(s, encoding=None, cls=None, object_hook=None, parse_float=None,
+            parse_int=None, parse_constant=None, object_pairs_hook=None, **kw):
+        """Deserialize ``s`` (a ``str`` or ``unicode`` instance containing a JSON
+        document) to a Python object.
+    
+        If ``s`` is a ``str`` instance and is encoded with an ASCII based encoding
+        other than utf-8 (e.g. latin-1) then an appropriate ``encoding`` name
+        must be specified. Encodings that are not ASCII based (such as UCS-2)
+        are not allowed and should be decoded to ``unicode`` first.
+    
+        ``object_hook`` is an optional function that will be called with the
+        result of any object literal decode (a ``dict``). The return value of
+        ``object_hook`` will be used instead of the ``dict``. This feature
+        can be used to implement custom decoders (e.g. JSON-RPC class hinting).
+    
+        ``object_pairs_hook`` is an optional function that will be called with the
+        result of any object literal decoded with an ordered list of pairs.  The
+        return value of ``object_pairs_hook`` will be used instead of the ``dict``.
+        This feature can be used to implement custom decoders that rely on the
+        order that the key and value pairs are decoded (for example,
+        collections.OrderedDict will remember the order of insertion). If
+        ``object_hook`` is also defined, the ``object_pairs_hook`` takes priority.
+    
+        ``parse_float``, if specified, will be called with the string
+        of every JSON float to be decoded. By default this is equivalent to
+        float(num_str). This can be used to use another datatype or parser
+        for JSON floats (e.g. decimal.Decimal).
+    
+        ``parse_int``, if specified, will be called with the string
+        of every JSON int to be decoded. By default this is equivalent to
+        int(num_str). This can be used to use another datatype or parser
+        for JSON integers (e.g. float).
+    
+        ``parse_constant``, if specified, will be called with one of the
+        following strings: -Infinity, Infinity, NaN, null, true, false.
+        This can be used to raise an exception if invalid JSON numbers
+        are encountered.
+    
+        To use a custom ``JSONDecoder`` subclass, specify it with the ``cls``
+        kwarg; otherwise ``JSONDecoder`` is used.
+    
+        """
+        if (cls is None and encoding is None and object_hook is None and
+                parse_int is None and parse_float is None and
+                parse_constant is None and object_pairs_hook is None and not kw):
+>           return _default_decoder.decode(s)
+
+C:\EdgeDeployment\python27\lib\json\__init__.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x02BC33B0>
+s = "Bad input data: A validation error occurred.  The value of 'awx_capratepercent' on record of type 'awx_propertysale' is outside the valid range."
+_w = <built-in method match of _sre.SRE_Pattern object at 0x02A46638>
+
+    def decode(self, s, _w=WHITESPACE.match):
+        """Return the Python representation of ``s`` (a ``str`` or ``unicode``
+            instance containing a JSON document)
+    
+            """
+>       obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+
+C:\EdgeDeployment\python27\lib\json\decoder.py:365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x02BC33B0>
+s = "Bad input data: A validation error occurred.  The value of 'awx_capratepercent' on record of type 'awx_propertysale' is outside the valid range."
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+            beginning with a JSON document) and return a 2-tuple of the Python
+            representation and the index in ``s`` where the document ended.
+    
+            This can be used to decode a JSON document from a string that may
+            have extraneous data at the end.
+    
+            """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration:
+>           raise ValueError("No JSON object could be decoded")
+E           ValueError: No JSON object could be decoded
+
+C:\EdgeDeployment\python27\lib\json\decoder.py:383: ValueError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.586000
+EntityBase.py               96 INFO     Sending POST request..
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2805
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1636
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2143
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1934
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_floor HTTP/1.1" 200 2606
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_floor_1 HTTP/1.1" 404 103
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_floor_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 997
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1502
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 3694
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/opportunity HTTP/1.1" 200 20477
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/opportunity_1 HTTP/1.1" 404 105
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/opportunity_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 6658
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_property HTTP/1.1" 200 15232
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_property_1 HTTP/1.1" 404 106
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_property_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1340
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2143
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1777
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1448
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency HTTP/1.1" 200 2229
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency_1 HTTP/1.1" 404 113
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/transactioncurrency_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 654
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_buyerrepcontactid": {"logicalname": "contact", "id": "1556991c-1977-e311-8d25-00155d280475"}, "awx_listingbrokercompanyid": {"logicalname": "account", "id": "cbfc3e08-7392-e311-a5b4-00155d28de35"}, "awx_sellerid": {"logicalname": "account", "id": "a33cf4e3-298f-e311-a5b4-00155d28de35"}, "awx_buyerrepid": {"logicalname": "account", "id": "697c3606-b756-e311-9314-00155d280475"}, "awx_confidential": "No", "awx_originatingdealid": {"logicalname": "opportunity", "id": "c87f1c43-c98f-e311-a5b4-00155d28de35"}, "awx_arealand": 8039.99, "awx_propertyid": {"logicalname": "awx_property", "id": "0ec0ee17-5b79-e311-8d25-00155d280475"}, "awx_sellingbrokerid": {"logicalname": "account", "id": "53f3b926-7492-e311-a5b4-00155d28de35"}, "awx_floorid": {"logicalname": "awx_floor", "id": "d0e19f4f-8a83-e311-a5b4-00155d28de35"}, "awx_occupancypercentatclosing": 135.41, "awx_capratepercent": 180.28, "awx_buyercontactid": {"logicalname": "contact", "id": "46c62172-e189-e311-a5b4-00155d28de35"}, "awx_sellercontactid": {"logicalname": "contact", "id": "1556991c-1977-e311-8d25-00155d280475"}, "awx_buyerid": {"logicalname": "account", "id": "60543450-8895-e311-aa29-00155d28de35"}, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502"}, "awx_listingbrokerid": {"logicalname": "contact", "id": "52b19840-7e71-e311-bb29-00155d280475"}, "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "type": "awx_propertysale", "awx_totalarea": 4118.1}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/sale//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"awx_buyerrepcontactid": {"logicalname": "contact", "id": "1556991c-1977-e311-8d25-00155d280475"}, "awx_listingbrokercompanyid": {"logicalname": "account", "id": "cbfc3e08-7392-e311-a5b4-00155d28de35"}, "awx_sellerid": {"logicalname": "account", "id": "a33cf4e3-298f-e311-a5b4-00155d28de35"}, "awx_buyerrepid": {"logicalname": "account", "id": "697c3606-b756-e311-9314-00155d280475"}, "awx_confidential": "No", "awx_originatingdealid": {"logicalname": "opportunity", "id": "c87f1c43-c98f-e311-a5b4-00155d28de35"}, "awx_arealand": 8039.99, "awx_propertyid": {"logicalname": "awx_property", "id": "0ec0ee17-5b79-e311-8d25-00155d280475"}, "awx_sellingbrokerid": {"logicalname": "account", "id": "53f3b926-7492-e311-a5b4-00155d28de35"}, "awx_floorid": {"logicalname": "awx_floor", "id": "d0e19f4f-8a83-e311-a5b4-00155d28de35"}, "awx_occupancypercentatclosing": 135.41, "awx_capratepercent": 180.28, "awx_buyercontactid": {"logicalname": "contact", "id": "46c62172-e189-e311-a5b4-00155d28de35"}, "awx_sellercontactid": {"logicalname": "contact", "id": "1556991c-1977-e311-8d25-00155d280475"}, "awx_buyerid": {"logicalname": "account", "id": "60543450-8895-e311-aa29-00155d28de35"}, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502"}, "awx_listingbrokerid": {"logicalname": "contact", "id": "52b19840-7e71-e311-bb29-00155d280475"}, "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "type": "awx_propertysale", "awx_totalarea": 4118.1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/sale// HTTP/1.1" 400 144
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:00.367000
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:47:18.4688031Z","Message":"Entity has not been indexed before the timeout. Consider changing the value of timeout parameter 'WaitCrawlersTimeout' in section 'MegsSettings' of EDGE config","ErrorLevel":"WARN","Longdate":"2014-02-18 02:47:15.3713","ThreadId":"37 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.opportunity, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:18.6709386Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:47:15.6008","ThreadId":"37 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""},{"TimeStamp":"2014-02-18T08:47:18.7451526Z","Message":"FaultException: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:15.8136","ThreadId":"29 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_propertysale, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: A validation error occurred.  The value of 'awx_capratepercent' on record of type 'awx_propertysale' is outside the valid range. (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."},{"TimeStamp":"2014-02-18T08:47:18.8359671Z","Message":"Inner Fault Message: A validation error occurred.  The value of 'awx_capratepercent' on record of type 'awx_propertysale' is outside the valid range.","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:15.8136","ThreadId":"29 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_propertysale, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:18.8808861Z","Message":"Inner Fault Trace Text: \r\n[Microsoft.Crm.ObjectModel: Microsoft.Crm.ObjectModel.TargetAttributeValidationPlugin]\r\n[c754fdb4-ef2f-4f2c-b49f-186214ab4dcd: TargetAttributeValidationPlugin]\r\n\r\n","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:15.8136","ThreadId":"29 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_propertysale, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:19.0039251Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:15.8185","ThreadId":"110","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_propertysale, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ArgumentException: Bad input data: A validation error occurred.  The value of 'awx_capratepercent' on record of type 'awx_propertysale' is outside the valid range.\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CheckSenderFault(FaultException ex)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CreateEntity(Entity sdkEntity)\r\n   at System.Dynamic.UpdateDelegates.UpdateAndExecute3[T0,T1,T2,TRet](CallSite site, T0 arg0, T1 arg1, T2 arg2)\r\n   at CallSite.Target(Closure , CallSite , EntityControllerBase , ICRMEntity , Object )\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.Post(Object entity)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"},{"TimeStamp":"2014-02-18T08:47:19.0918101Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:16.2003","ThreadId":"118","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.opportunity, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: The record could not be deleted because it is associated with another record (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."}]}

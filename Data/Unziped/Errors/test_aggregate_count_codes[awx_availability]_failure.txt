@@ -1,0 +1,296 @@
+#########################Automated tests trace#########################
+
+self = <Tests.InitialPopulation.RelatedEntityCounts.test_aggregate_counts.TestAggregatedEntityCounts instance at 0x040187D8>
+entity_with_aggregates = 'awx_availability'
+
+    @pytest.mark.xre_demo
+    def test_aggregate_count_codes(self, entity_with_aggregates):
+        entity_name = entity_with_aggregates
+        genericentity = EntityBase(
+            entity_name=entity_name
+        )
+        genericentity.authorization_token = self.authorization_token
+        genericentity.base_url = self.env_config.get_path("MEGS", "url")
+    
+        #self.search_api = SearchAPI(self.env_config,entity_name)
+        #self.search_api.set_authorization_token(self.authorization_token)
+        self.search_api.entity_name = entity_name
+    
+        _isPass = True
+        _error_message = ""
+        checked_aggregate_type = []
+        ids = []
+        for aggregate_type in ["activity", "history", "note", "connection"]:
+            #for aggregate_count in range(0,2):
+            for _sg in ["==", ">"]:
+                import pyes
+                #script = "doc['aggregateCountCodes.{0}'].value > {1}".format(aggregate_type,aggregate_count)
+                script = "doc['aggregateCountCodes.{0}'].value {1} 0".format(aggregate_type, _sg)
+                f1 = pyes.filters.BoolFilter()
+                f1.add_must(pyes.ScriptFilter(script))
+                #q1 = pyes.TermQuery("_type", entity_name)
+                q1 = pyes.TermQuery("_type", self.es_client.check_entity_mapping(entity_name))
+                aggregate_query = pyes.FilteredQuery(q1, f1)
+                try:
+                    ids.append(
+                        self.es_client.get_entities_by_query(
+                            query=aggregate_query
+                        )[0]
+                    )
+                except Exception, e:
+                    self.logger.exception(e)
+    
+        sample_body = self.search_api.sample_request
+        response_code, _search_api_response = self.search_api.send_search_request(request_body=sample_body, Size=1, Ids=ids)
+        search_results = json.loads(_search_api_response)["Results"]
+    
+        for result in search_results:
+            if type(result["aggregateCountCodes"]) == dict:
+                if ["activity","history","note","connection"] in checked_aggregate_type:
+                    break
+                for _code_key in result["aggregateCountCodes"].keys():
+                    general_entity_name = HTTPUrlMapping().get_entity_mapping(entity_name, type="general")
+                    if result["aggregateCountCodes"][_code_key] > 0 and _code_key not in checked_aggregate_type:
+                        _action = ""
+                        if _code_key in ["activity", "history"]:
+                            _action = "activities"
+                            if _code_key == "activity":
+                                _index_count = result["aggregateCountCodes"]["activity"]
+                            else:
+                                _index_count = result["aggregateCountCodes"]["history"]
+                        else:
+                            _index_count = result["aggregateCountCodes"][_code_key]
+                            if _code_key == "connection":
+                                _action = "connections"
+                            else:
+                                _action = "notes"
+    
+                        checked_aggregate_type.append(_code_key)
+                        _test_entity_id = result["{0}id".format(entity_name)]
+                        api_request = HTTPUrlMapping().get_api_url(
+                            method="GET",
+                            entity=general_entity_name,
+                            id=_test_entity_id,
+                            action=_action
+                        )
+                        if _code_key in ["activity", "history", "connection"]:
+                            _megs_response1 = genericentity.get_entity(
+                                params={
+                                    "id": _test_entity_id,
+                                    "action": _action
+                                }
+                            )[1]
+                            _details_count = len(json.loads(_megs_response1)["Objects"])
+                            if _code_key in ["activity", "history"]:
+                                _get_request_results = json.loads(_megs_response1)["Objects"]
+                                _history_count = 0
+                                _activity_count = 0
+                                for _obj in _get_request_results:
+                                    if _obj["statecode"] in ["Canceled", "Completed"]:
+                                        _history_count += 1
+                                    else:
+                                        _activity_count += 1
+    
+                                if _code_key == "activity":
+                                    _details_count = _activity_count
+                                else:
+                                    _details_count = _history_count
+    
+                            elif _code_key in []:
+                                _details_count = 0
+    
+                            self.logger.info("Verify aggregate counts for particular MEGS1 API request - {0}".format(
+                                api_request))
+                            if int(_index_count) != int(_details_count):
+                                _isPass = False
+                                _error_message = "Aggregate counts in Index not match to Cache for {0}, {1}".format(
+                                    entity_name,
+                                    result["{0}id".format(entity_name)])
+                                self.logger.error(_error_message)
+                                self.logger.error("Index {0} count : {1}".format(
+                                    _code_key,
+                                    _index_count))
+                                self.logger.error("Cache {0} count : {1}".format(
+                                    _code_key,
+                                    _details_count))
+    
+                            self.logger.info("Verify aggregate counts in entity details - {0}".format(entity_name))
+                            _megs_response2 = genericentity.get_entity(
+                                params={
+                                    "id": _test_entity_id,
+                                    "request_params": "relationCalculationTimeout=-1"
+                                }
+                            )[1]
+                            _entity_details = json.loads(_megs_response2)
+                            if int(_index_count) != int(_entity_details["related_{0}".format(_code_key)]):
+                                _isPass = False
+                                _error_message = "Aggregate counts in Index not match to Cache for {0}, {1}".format(
+                                    entity_name,
+                                    result["{0}id".format(entity_name)])
+                                self.logger.error(_error_message)
+                                self.logger.error("Index {0} count : {1}".format(
+                                    _code_key,
+                                    _index_count))
+                                self.logger.error("Cache (entity details) {0} count : {1}".format(
+                                    _code_key,
+                                    _entity_details["related_{0}".format(_code_key)]))
+    
+                        else:
+                            self.logger.info("Verify aggregate counts in entity details - {0}".format(entity_name))
+                            _megs_response3 = genericentity.get_entity(
+                                params={
+                                    "id": _test_entity_id,
+                                    "request_params": "relationCalculationTimeout=-1"
+                                }
+                            )[1]
+                            _entity_details = json.loads(_megs_response3)
+                            if int(_index_count) != int(_entity_details["related_{0}".format(_code_key)]):
+                                _isPass = False
+                                _error_message = "Aggregate counts in Index not match to Cache for {0}, {1}".format(
+                                    entity_name,
+                                    result["{0}id".format(entity_name)])
+                                self.logger.error(_error_message)
+                                self.logger.error("Index {0} count : {1}".format(_code_key, _index_count))
+                                self.logger.error("Cache {0} count : {1}".format(_code_key, _entity_details["related_{0}".format(_code_key)]))
+    
+            else:
+                self.logger.error("Field 'aggregateCountCodes' has invalid type - {0}".format(type(result["aggregateCountCodes"])))
+    
+        if bool(_isPass):
+            pass
+        else:
+>           raise Exception, "Aggregate counts in Index match to Cache"
+E           Exception: Aggregate counts in Index match to Cache
+
+C:\EdgeDeployment\FunctionalTests\src\Elasticsearch\Tests\InitialPopulation\RelatedEntityCounts\test_aggregate_counts.py:189: Exception
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2124
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.463000
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1953
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1961
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1953
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2245
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1954
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1664
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1953
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_availability HTTP/1.1" 200 22679
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2383
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/awx_availability
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": [], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 25}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/awx_availability HTTP/1.1" 200 51017
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.214000
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/01138229-3979-e311-8d25-00155d280475/activities
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/01138229-3979-e311-8d25-00155d280475/activities HTTP/1.1" 200 4733
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.916000
+test_aggregate_counts.py   130 INFO     Verify aggregate counts for particular MEGS1 API request - api/availability/01138229-3979-e311-8d25-00155d280475/activities
+test_aggregate_counts.py   144 INFO     Verify aggregate counts in entity details - awx_availability
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/01138229-3979-e311-8d25-00155d280475/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            127 DEBUG    Request params: relationCalculationTimeout=-1
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/01138229-3979-e311-8d25-00155d280475/?relationCalculationTimeout=-1 HTTP/1.1" 200 2413
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.873000
+test_aggregate_counts.py   166 INFO     Verify aggregate counts in entity details - awx_availability
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/1783d0fa-535e-e311-9471-00155d280475/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            127 DEBUG    Request params: relationCalculationTimeout=-1
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/1783d0fa-535e-e311-9471-00155d280475/?relationCalculationTimeout=-1 HTTP/1.1" 200 2429
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.618000
+test_aggregate_counts.py   179 ERROR    Aggregate counts in Index not match to Cache for awx_availability, 1783d0fa-535e-e311-9471-00155d280475
+test_aggregate_counts.py   180 ERROR    Index note count : 1
+test_aggregate_counts.py   181 ERROR    Cache note count : 0
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/290cbcfc-3992-e311-a5b4-00155d28de35/connections
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/290cbcfc-3992-e311-a5b4-00155d28de35/connections HTTP/1.1" 200 3377
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.596000
+test_aggregate_counts.py   130 INFO     Verify aggregate counts for particular MEGS1 API request - api/availability/290cbcfc-3992-e311-a5b4-00155d28de35/connections
+test_aggregate_counts.py   144 INFO     Verify aggregate counts in entity details - awx_availability
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/290cbcfc-3992-e311-a5b4-00155d28de35/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            127 DEBUG    Request params: relationCalculationTimeout=-1
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/290cbcfc-3992-e311-a5b4-00155d28de35/?relationCalculationTimeout=-1 HTTP/1.1" 200 2549
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.164000
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/298db120-5a79-e311-8d25-00155d280475/activities
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/298db120-5a79-e311-8d25-00155d280475/activities HTTP/1.1" 200 7905
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.914000
+test_aggregate_counts.py   130 INFO     Verify aggregate counts for particular MEGS1 API request - api/availability/298db120-5a79-e311-8d25-00155d280475/activities
+test_aggregate_counts.py   144 INFO     Verify aggregate counts in entity details - awx_availability
+EntityBase.py              132 INFO     Sending GET request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/availability/298db120-5a79-e311-8d25-00155d280475/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'29a288488af74399a18e23236dad099b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            127 DEBUG    Request params: relationCalculationTimeout=-1
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/availability/298db120-5a79-e311-8d25-00155d280475/?relationCalculationTimeout=-1 HTTP/1.1" 200 2616
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.414000
+#########################Server error trace#########################
+{"index":[],"megs":[{"TimeStamp":"2014-02-18T08:53:55.748725Z","Message":"Could not get the value of required parameter 'crm_account_id'","ErrorLevel":"WARN","Longdate":"2014-02-18 02:53:55.3493","ThreadId":"12 ","Logger":"AscendixRE.InsideView.Implementation.Requests.InsideViewRequestUtils","Exception":""}]}

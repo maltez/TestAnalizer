@@ -1,0 +1,115 @@
+#########################Automated tests trace#########################
+
+self = <Search.Tests.SimpleSearch.SearchByField.test_search_by_field.TestSearchByField object at 0x041417F0>
+entity_with_searchable_field = <PyTest.InputTestCriteria.InputTestCriteria.EntityWithField object at 0x04249310>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x04141590>
+
+    @pytest.mark.xre_demo
+    @params(["Search,TermFacetLookup,TermFacetLookupAggregates"])
+    def test_search_entity_by_particular_field(self, entity_with_searchable_field, search_api):
+        '''
+            This test checks search by particular field. Each entity in search result have to contain in particular field
+            word that contains query
+            @return:
+            '''
+        if isinstance(entity_with_searchable_field, EntityWithField):
+            #Prepare search_api class
+            entity = entity_with_searchable_field.entity_type
+            field_name = entity_with_searchable_field.field_name
+            search_api.entity_name = entity
+    
+            self.logger.debug(entity_with_searchable_field.to_str_repr())
+            try:
+                random_entity = self.get_random_entity_from_index(entity=entity, field_name=field_name) #Prepare random entity from Index
+                if not random_entity:
+                    raise SkipTestException("There is no record in index with valid value for {0} field".format(field_name))
+    
+                query = search_api.get_field_value_from_entity_details(
+                    field_name,
+                    random_entity
+                )
+                assert random_entity, \
+                    "The record with field {0} has not been found in the Index after 50 retries".format(field_name)
+    
+                #Prepare request body
+                request_body = search_api.add_field_filter_to_request_body(query=query, fieldname=field_name, append=False)  #Prepare request body
+    
+                #Search result
+                res_code, res_text = search_api.send_search_request(request_body=request_body)  #Send request
+                self.assertSearchResponse(res_code, res_text) #Validate result
+    
+                _response_details = json.loads(res_text)
+                #Count - total number of records in result
+                count = len(_response_details["Results"])
+                if count <= 0:
+                    assert False, "Empty search results received for valid search query value - {0} -".format(query)
+                    #Actual count - number of records in the search response which contains query in the particular field
+                isContain = True
+                for result in _response_details['Results']:
+                    #if bool(search_api.get_field_metadata_by_name(field_name)["Result"]):
+                    if bool(self.edge_entity_model[entity].IndexSchema.get_field_metadata_by_name(field_name)["Result"]):
+                        isContain = search_api.check_search_result_contain_test_value(
+                            field_name,
+                            result,
+                            query,
+                            isFieldFilter=True,
+                            match_mode="RelevancePrefix")
+                    else:
+                        result_id = search_api.get_id_from_entity_details(result)
+                        isContain = search_api.check_search_result_contain_test_value(
+                            field_name,
+                            self.es_client.get_entity_by_id(result_id),
+                            query,
+                            isFieldFilter=True,
+                            match_mode="RelevancePrefix")
+                    assert isContain, "Search result doesn't contain query string value -{0}- \n {1}".format(query, result)
+            except SkipTestException, e:
+                self.logger.exception(e)
+                pytest.skip("There is no record in index with valid value for {0} field".format(field_name))
+            except AssertionError, e:
+                self.logger.exception(e)
+                pytest.fail("Search by field not working for {0}. Inner assertion: {1}".format(
+                    str(entity_with_searchable_field),
+                    e.message
+                ))
+            except Exception, e:
+                self.logger.exception(e)
+                pytest.fail("Test execution stopped. An error occurred. Inner exception: {0}".format(
+>                   e.message
+                ))
+E               Failed: Test execution stopped. An error occurred. Inner exception: 'NoneType' object has no attribute 'decode'
+
+C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\SearchByField\test_search_by_field.py:141: Failed
+-------------------------------- Captured log ---------------------------------
+test_search_by_field.py     30 INFO     
+Starting test: test_search_entity_by_particular_field
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'f3fe99178c8a4ab5b967f14bbb68196a', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.330000
+test_search_by_field.py     84 DEBUG    
+---Input data---
+test_entity_type=awx_lease
+field_name=awx_leaseawx_tenantbrokeridaccount.name
+term_facet_size=None
+field_metadata=None
+---------------
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_lease HTTP/1.1" 200 20540
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2019
+test_search_by_field.py    139 ERROR    'NoneType' object has no attribute 'decode'
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\SearchByField\test_search_by_field.py", line 98, in test_search_entity_by_particular_field
+    request_body = search_api.add_field_filter_to_request_body(query=query, fieldname=field_name, append=False)  #Prepare request body
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Contract\search.py", line 286, in add_field_filter_to_request_body
+    newFilter['Query'] = self.encode_decode_value(query)
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Contract\search.py", line 119, in encode_decode_value
+    return value.decode("utf-8")
+AttributeError: 'NoneType' object has no attribute 'decode'
+#########################Server error trace#########################
+{"index":[],"megs":[]}

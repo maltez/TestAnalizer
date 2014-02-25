@@ -1,0 +1,220 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x035868F0>
+generic_entity_test_criteria = <PyTest.InputTestCriteria.InputTestCriteria.GenericEntityTestCriteria object at 0x03586A10>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x042BA370>
+
+    @pytest.mark.crud
+    def test_delete_entity(self, generic_entity_test_criteria, search_api):
+        if isinstance(generic_entity_test_criteria, GenericEntityTestCriteria):
+            entity = generic_entity_test_criteria.api_object
+            entity.es_client = self.es_client
+            _primary_key = self.es_client.edge_metadata[entity.entity_name].get_entity_primary_key_field()
+    
+            ##Create entity
+            #http_response = list(entity.create_entity(params={}))
+            #obj_id = json.loads(http_response[1])[_primary_key]
+            if not self.get_from_local_entity_storage(entity.entity_name):
+                #Create entity
+                http_response = list(entity.create_entity(params={}))
+>               obj_id = json.loads(http_response[1])[_primary_key]
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\CRUD\test_entity_crud_action.py:290: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = 'Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)'
+encoding = None, cls = None, object_hook = None, parse_float = None
+parse_int = None, parse_constant = None, object_pairs_hook = None, kw = {}
+
+    def loads(s, encoding=None, cls=None, object_hook=None, parse_float=None,
+            parse_int=None, parse_constant=None, object_pairs_hook=None, **kw):
+        """Deserialize ``s`` (a ``str`` or ``unicode`` instance containing a JSON
+        document) to a Python object.
+    
+        If ``s`` is a ``str`` instance and is encoded with an ASCII based encoding
+        other than utf-8 (e.g. latin-1) then an appropriate ``encoding`` name
+        must be specified. Encodings that are not ASCII based (such as UCS-2)
+        are not allowed and should be decoded to ``unicode`` first.
+    
+        ``object_hook`` is an optional function that will be called with the
+        result of any object literal decode (a ``dict``). The return value of
+        ``object_hook`` will be used instead of the ``dict``. This feature
+        can be used to implement custom decoders (e.g. JSON-RPC class hinting).
+    
+        ``object_pairs_hook`` is an optional function that will be called with the
+        result of any object literal decoded with an ordered list of pairs.  The
+        return value of ``object_pairs_hook`` will be used instead of the ``dict``.
+        This feature can be used to implement custom decoders that rely on the
+        order that the key and value pairs are decoded (for example,
+        collections.OrderedDict will remember the order of insertion). If
+        ``object_hook`` is also defined, the ``object_pairs_hook`` takes priority.
+    
+        ``parse_float``, if specified, will be called with the string
+        of every JSON float to be decoded. By default this is equivalent to
+        float(num_str). This can be used to use another datatype or parser
+        for JSON floats (e.g. decimal.Decimal).
+    
+        ``parse_int``, if specified, will be called with the string
+        of every JSON int to be decoded. By default this is equivalent to
+        int(num_str). This can be used to use another datatype or parser
+        for JSON integers (e.g. float).
+    
+        ``parse_constant``, if specified, will be called with one of the
+        following strings: -Infinity, Infinity, NaN, null, true, false.
+        This can be used to raise an exception if invalid JSON numbers
+        are encountered.
+    
+        To use a custom ``JSONDecoder`` subclass, specify it with the ``cls``
+        kwarg; otherwise ``JSONDecoder`` is used.
+    
+        """
+        if (cls is None and encoding is None and object_hook is None and
+                parse_int is None and parse_float is None and
+                parse_constant is None and object_pairs_hook is None and not kw):
+>           return _default_decoder.decode(s)
+
+C:\EdgeDeployment\python27\lib\json\__init__.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x02BC33B0>
+s = 'Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)'
+_w = <built-in method match of _sre.SRE_Pattern object at 0x02A46638>
+
+    def decode(self, s, _w=WHITESPACE.match):
+        """Return the Python representation of ``s`` (a ``str`` or ``unicode``
+            instance containing a JSON document)
+    
+            """
+>       obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+
+C:\EdgeDeployment\python27\lib\json\decoder.py:365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x02BC33B0>
+s = 'Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+            beginning with a JSON document) and return a 2-tuple of the Python
+            representation and the index in ``s`` where the document ended.
+    
+            This can be used to decode a JSON document from a string that may
+            have extraneous data at the end.
+    
+            """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration:
+>           raise ValueError("No JSON object could be decoded")
+E           ValueError: No JSON object could be decoded
+
+C:\EdgeDeployment\python27\lib\json\decoder.py:383: ValueError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.191000
+AwxLease.py                 13 INFO     Sending POST request..
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_floor HTTP/1.1" 200 2606
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_floor_1 HTTP/1.1" 404 103
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_floor_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1077
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2398
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1440
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 4897
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2039
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2128
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_property HTTP/1.1" 200 15232
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_property_1 HTTP/1.1" 404 106
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/awx_property_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1372
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact HTTP/1.1" 200 15916
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/contact_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/contact_1/_count HTTP/1.1" 200 61
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1512
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2729
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account HTTP/1.1" 200 10576
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/account_1 HTTP/1.1" 404 101
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/account_1/_count HTTP/1.1" 200 60
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1690
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 124
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency HTTP/1.1" 200 2229
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency_1 HTTP/1.1" 404 113
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/transactioncurrency_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 655
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"awx_tenantbrokercontactid": {"logicalname": "contact", "id": "7788b6c4-8095-e311-aa29-00155d28de35"}, "awx_leasefreerentmonths": 126, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502"}, "awx_parkingstalls": 185, "awx_listingbrokerid": {"logicalname": "account", "id": "42e76082-7f92-e311-a5b4-00155d28de35"}, "awx_listingagentid": {"logicalname": "contact", "id": "f4505882-7798-e311-aa29-00155d28de35"}, "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "awx_size": 794.46, "awx_allowancecomments": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "awx_unittype": "Hospitality", "type": "awx_lease", "awx_tenantid": {"logicalname": "account", "id": "0c3e634d-0574-e311-bb29-00155d280475"}, "awx_freerentsize": 5299.46, "awx_primarytenantcontactid": {"logicalname": "contact", "id": "45dd7b8e-508e-e311-a5b4-00155d28de35"}, "awx_leasetype": "Other", "awx_propertyid": {"logicalname": "awx_property", "id": "ec33079a-7671-e311-bb29-00155d280475"}, "awx_documenttype": "Letter Agreement", "awx_parkingratio": "TEST upabe", "awx_ownerid": {"logicalname": "account", "id": "cf6c8be9-ec92-e311-a5b4-00155d28de35"}, "awx_leaserateescalationcomments": "TEST English / English", "awx_tenantbrokerid": {"logicalname": "account", "id": "fdceaf5c-d973-e311-bb29-00155d280475"}, "awx_floorid": {"logicalname": "awx_floor", "id": "adebed51-565e-e311-9471-00155d280475"}, "awx_ownercontactid": {"logicalname": "contact", "id": "af662c1b-9961-e311-9471-00155d280475"}}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/lease//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"awx_tenantbrokercontactid": {"logicalname": "contact", "id": "7788b6c4-8095-e311-aa29-00155d28de35"}, "awx_leasefreerentmonths": 17, "awx_somid": {"logicalname": "awx_som", "id": "acd1daf5-9249-e011-8563-00155d0b5502"}, "awx_parkingstalls": 185, "awx_listingbrokerid": {"logicalname": "account", "id": "42e76082-7f92-e311-a5b4-00155d28de35"}, "awx_listingagentid": {"logicalname": "contact", "id": "f4505882-7798-e311-aa29-00155d28de35"}, "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}, "awx_size": 794.46, "awx_allowancecomments": "TEST Chinese / \u00e9\u00a6\u0096\u00e9\u00a1\u00b5", "awx_unittype": "Hospitality", "type": "awx_lease", "awx_tenantid": {"logicalname": "account", "id": "0c3e634d-0574-e311-bb29-00155d280475"}, "awx_freerentsize": 5299.46, "awx_primarytenantcontactid": {"logicalname": "contact", "id": "45dd7b8e-508e-e311-a5b4-00155d28de35"}, "awx_leasetype": "Other", "awx_propertyid": {"logicalname": "awx_property", "id": "ec33079a-7671-e311-bb29-00155d280475"}, "awx_documenttype": "Letter Agreement", "awx_parkingratio": "TEST upabe", "awx_ownerid": {"logicalname": "account", "id": "cf6c8be9-ec92-e311-a5b4-00155d28de35"}, "awx_freerent": 149, "awx_entirebuilding": "FALSE", "awx_leaserateescalationcomments": "TEST English / English", "awx_tenantbrokerid": {"logicalname": "account", "id": "fdceaf5c-d973-e311-bb29-00155d280475"}, "awx_floorid": {"logicalname": "awx_floor", "id": "adebed51-565e-e311-9471-00155d280475"}, "awx_ownercontactid": {"logicalname": "contact", "id": "af662c1b-9961-e311-9471-00155d280475"}}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/lease// HTTP/1.1" 400 161
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:01.495000
+#########################Server error trace#########################
+{"index":[{"TimeStamp":"2014-02-18T08:47:01.6456611Z","Message":"Failed to get entity from crm. Name:awx_preference, ID:8052a932-7998-e311-aa29-00155d28de35. \n\r Exception: Entity with Id: 8052a932-7998-e311-aa29-00155d28de35 not found.","ErrorLevel":"WARN","Longdate":"2014-02-18 02:46:35.7732","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:47:01.7394051Z","Message":"Entity is not in index. Type:awx_preference, id:8052a932-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:46:36.6199","ThreadId":"30 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""},{"TimeStamp":"2014-02-18T08:47:01.7774886Z","Message":"Entity is not in index. Type:awx_preference, id:8052a932-7998-e311-aa29-00155d28de35","ErrorLevel":"WARN","Longdate":"2014-02-18 02:46:51.5554","ThreadId":"25 ","Logger":"AscendixRE.Search.Crawler.Implementation.Data.CrUDSearchProvider","Exception":""}],"megs":[{"TimeStamp":"2014-02-18T08:47:03.2695806Z","Message":"Entity has not been indexed before the timeout. Consider changing the value of timeout parameter 'WaitCrawlersTimeout' in section 'MegsSettings' of EDGE config","ErrorLevel":"WARN","Longdate":"2014-02-18 02:46:21.0193","ThreadId":"7  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicActivityController`1[[DetailSchema_1.fax, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:03.4043376Z","Message":"Entity has not been indexed before the timeout. Consider changing the value of timeout parameter 'WaitCrawlersTimeout' in section 'MegsSettings' of EDGE config","ErrorLevel":"WARN","Longdate":"2014-02-18 02:46:47.9531","ThreadId":"10 ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicActivityController`1[[DetailSchema_1.task, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:03.4482801Z","Message":"Entity has not been indexed before the timeout. Consider changing the value of timeout parameter 'WaitCrawlersTimeout' in section 'MegsSettings' of EDGE config","ErrorLevel":"WARN","Longdate":"2014-02-18 02:46:52.0456","ThreadId":"6  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicActivityController`1[[DetailSchema_1.email, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:03.5117526Z","Message":"FaultException: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:00.2277","ThreadId":"9  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_lease, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a) (Fault Detail is equal to Microsoft.Xrm.Sdk.OrganizationServiceFault)."},{"TimeStamp":"2014-02-18T08:47:03.5264001Z","Message":"Inner Fault Message: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:00.2277","ThreadId":"9  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_lease, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:03.5342121Z","Message":"Inner Fault Trace Text: [Ascendix.XRE.Plugins: Ascendix.XRE.Plugins.Connection]\r\n[c181d0e8-460a-e111-a170-000c290b0e27: Ascendix.XRE.Plugins.Connection: PostCreate of awx_lease]\r\n","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:00.2277","ThreadId":"9  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_lease, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":""},{"TimeStamp":"2014-02-18T08:47:03.5781546Z","Message":"Exception: ","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:47:00.2277","ThreadId":"9  ","Logger":"AscendixRE.MEGS.ApiControllers.BaseControllers.Dynamic.DynamicEntityController`1[[DetailSchema_1.awx_lease, a6c3f7df403142b8b87f32c28345d74f, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]","Exception":"System.ArgumentException: Bad input data: Principal team (Id=b0089655-ad56-e311-a147-00155d280475, type=9) is missing prvReadConnection privilege (Id=919f6df3-97bf-4897-82f1-9d67749eab3a)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CheckSenderFault(FaultException ex)\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.CreateEntity(Entity sdkEntity)\r\n   at System.Dynamic.UpdateDelegates.UpdateAndExecute3[T0,T1,T2,TRet](CallSite site, T0 arg0, T1 arg1, T2 arg2)\r\n   at CallSite.Target(Closure , CallSite , EntityControllerBase , ICRMEntity , Object )\r\n   at AscendixRE.MEGS.ApiControllers.BaseControllers.EntityControllerBase.Post(Object entity)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.<>c__DisplayClass13.<GetExecutor>b__c(Object instance, Object[] methodParameters)\r\n   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)\r\n   at System.Threading.Tasks.TaskHelpers.RunSynchronously[TResult](Func`1 func, CancellationToken cancellationToken)"}]}

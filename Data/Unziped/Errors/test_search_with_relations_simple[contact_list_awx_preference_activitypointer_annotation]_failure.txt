@@ -1,0 +1,104 @@
+#########################Automated tests trace#########################
+
+self = <Search.Tests.SearchWithRelations.test_search_with_relations.TestSearchWithRelations object at 0x03425D30>
+entity_with_test_field = <PyTest.InputTestCriteria.InputTestCriteria.EntityWithField object at 0x0348A910>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x03425BD0>
+
+    @pytest.mark.xre_demo
+    def test_search_with_relations_simple(self, entity_with_test_field, search_api):
+        if isinstance(entity_with_test_field, EntityWithField):
+            entity_type = entity_with_test_field.entity_type
+            related_entities = entity_with_test_field.field_name.split(",")
+    
+            search_api.entity_name = entity_type
+    
+            self.logger.debug(entity_with_test_field.to_str_repr())
+    
+            try:
+                ids, related_ids = self.get_entity_ids_related_to(
+                    entity_type,
+                    related_entities,
+                    self.es_client
+                )
+                related_ids = dict(zip(ids, related_entities))
+                response_code, response_text = search_api.send_search_request(
+                    request_body=SearchRequest(
+                        ResultsFormat="Hit",
+                        Relations=related_entities,
+                        RelationCounts=related_entities,
+                        Ids=ids
+                    ).to_json()
+                )
+                self.assertSearchResponse(response_code, response_text, validate_result=True)
+    
+                search_response = SearchResponse(json.loads(response_text))
+    
+                self.assertSearchWithRelations(
+                    search_response,
+                    related_ids
+                )
+            except AssertionError, e:
+                self.logger.exception(e)
+                pytest.fail("Search with relations not working for {0}. Inner assertion: {1}".format(
+                    str(entity_with_test_field),
+>                   e.message
+                ))
+E               Failed: Search with relations not working for contact__list,awx_preference,activitypointer,annotation. Inner assertion: Search result not contain Relations, RelationCounts fields
+
+C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SearchWithRelations\test_search_with_relations.py:65: Failed
+-------------------------------- Captured log ---------------------------------
+test_search_with_relations.py   26 INFO     
+Starting test: test_search_with_relations_simple
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'f3fe99178c8a4ab5b967f14bbb68196a', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.430000
+test_search_with_relations.py   36 DEBUG    
+---Input data---
+test_entity_type=contact
+field_name=list,awx_preference,activitypointer,annotation
+term_facet_size=None
+field_metadata=None
+---------------
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/listmember HTTP/1.1" 200 2345
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/listmember HTTP/1.1" 200 2345
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 823
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1933
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_preference HTTP/1.1" 200 9325
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/awx_preference HTTP/1.1" 200 9325
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1645
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 5502
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1425
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1933
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/annotation HTTP/1.1" 200 3030
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 1005
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 2369
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/contact
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'f3fe99178c8a4ab5b967f14bbb68196a', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": "Hit", "From": 0, "SelectedDateTimeFacets": null, "Relations": ["list", "awx_preference", "activitypointer", "annotation"], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["0aa10c54-7679-e311-8d25-00155d280475", "18affd6e-357f-e311-a5b4-00155d28de35", "0aa10c54-7679-e311-8d25-00155d280475", "97006b21-8571-e311-bb29-00155d280475"], "SelectedNumericFacets": null, "RelationCounts": ["list", "awx_preference", "activitypointer", "annotation"], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 25}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/contact HTTP/1.1" 200 108014
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.075000
+test_search_with_relations.py   62 ERROR    Search result not contain Relations, RelationCounts fields
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SearchWithRelations\test_search_with_relations.py", line 59, in test_search_with_relations_simple
+    related_ids
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Assertions\SearchWithRelationsAssertMixin.py", line 9, in assertSearchWithRelations
+    set(result.source.keys())), "Search result not contain Relations, RelationCounts fields"
+AssertionError: Search result not contain Relations, RelationCounts fields
+#########################Server error trace#########################
+{"index":[],"megs":[]}

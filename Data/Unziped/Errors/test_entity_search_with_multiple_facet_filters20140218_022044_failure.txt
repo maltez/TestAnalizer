@@ -1,0 +1,209 @@
+#########################Automated tests trace#########################
+
+self = <Search.Tests.SimpleSearch.Facets.test_facet_fields.TestFacetFields object at 0x047A1290>
+entity_with_test_field = <PyTest.InputTestCriteria.InputTestCriteria.EntityWithField object at 0x0349C230>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x047B4810>
+
+    @pytest.mark.xre_demo
+    @params(["MultipleFacetFilters"])
+    def test_entity_search_with_multiple_facet_filters(self, entity_with_test_field, search_api):
+        if isinstance(entity_with_test_field, EntityWithField):
+            entity_type = entity_with_test_field.entity_type
+            facets_logical_names = entity_with_test_field.field_name.split(",")
+            field_metadata = entity_with_test_field.field_metadata
+            term_facet_size = entity_with_test_field.term_facet_size
+            search_api.entity_name = entity_type
+    
+            self.logger.debug(entity_with_test_field.to_str_repr())
+    
+            try:
+                res1_code, res1_text = search_api.send_search_request(
+                    request_body=SearchRequest(
+                        Size=5,
+                        TermFacetSize=term_facet_size
+                    ).to_json()
+                )
+                self.assertSearchResponse(res1_code, res1_text)
+                search_response = SearchResponse(json.loads(res1_text))
+                filter_apply_history = {}
+                count = 0
+                while facets_logical_names:
+                    count += 1
+                    filter_apply_history.setdefault("ApplyFilter{0}".format(count), {})
+                    filter_details = {}
+    
+                    for facet_logical_name in facets_logical_names:
+                        filter_details.setdefault(facet_logical_name, {})
+                        filter_details[facet_logical_name].setdefault("FacetType", "")
+                        filter_details[facet_logical_name].setdefault("FacetMatch", None)
+                        filter_details[facet_logical_name].setdefault("MaxCountFilter", {})
+    
+                        facet_type, facet_match = search_response.get_facet_match_details_by_field_name(
+                            facet_logical_name
+                        )
+    
+                        if not facet_match:
+                            raise FacetNotFound("Facet with logical name -{0}- not found in search response "
+                                                "for entity -{1}-".format(facet_logical_name, entity_type))
+    
+                        self.assertFacetItemCollectionIsEmpty(
+                            facet_match,
+                            search_response.total,
+                            field_metadata[facet_logical_name]
+                        )
+    
+                        filter_details[facet_logical_name]["FacetType"] = facet_type
+                        filter_details[facet_logical_name]["FacetMatch"] = facet_match
+    
+                        if not facet_match.items:
+                            self.logger.warn("Facet item collection is empty for facet - {0} -".format(
+                                facet_logical_name))
+                            try:
+                                filter_details[facet_logical_name]["MaxCountFilter"] = (facet_match.missing,
+                                    self._get_facet_match_obj_for_missing_items(facet_match))
+                            except Exception:
+                                pass
+                        else:
+                            filter_details[facet_logical_name]["MaxCountFilter"] = facet_match.get_max_count_facet_match()
+    
+                    if list(filter_details):
+                        max_count_filter_name, max_count_filter = self._get_max_from_filter_details(filter_details)
+                        filter_apply_history["ApplyFilter{0}".format(count)]["filter_details"] = filter_details
+                        filter_apply_history["ApplyFilter{0}".format(count)]["max_count_filter_name"] = max_count_filter_name
+                        filter_apply_history["ApplyFilter{0}".format(count)]["max_count_filter"] = max_count_filter
+                        filter_apply_history["ApplyFilter{0}".format(count)]["facet_type"] = \
+                            filter_details[max_count_filter_name]["FacetType"]
+    
+                        self.logger.info("Applying filter - {0} -".format(max_count_filter_name))
+    
+                        facets_logical_names.remove(max_count_filter_name)
+    
+                        self.logger.info("Test {0} facet:".format(filter_details[max_count_filter_name]["FacetType"]))
+                        self.logger.info("Testing facet sample: {0}".format(max_count_filter.to_request_filter_str_repr()))
+    
+                        search_request = SearchRequest(
+                            Size=5,
+                            TermFacetSize=term_facet_size
+                        )
+                        search_api.entity_name = entity_type
+    
+                        #if count == 1:
+                        for filter_name in filter_details:
+                            search_request.apply_selected_facet(
+                                facet_type=filter_details[filter_name]["FacetType"],
+                                selected_facet=filter_details[filter_name]["FacetMatch"].logical_name,
+                                mode="append"
+                            )
+    
+                        for applied_filter_name in filter_apply_history:
+                            applied_filter = filter_apply_history[applied_filter_name]
+                            search_request.add_facet_filters(
+                                facet_type=applied_filter["facet_type"],
+                                field_name=applied_filter["max_count_filter_name"],
+                                filter_collection=applied_filter["max_count_filter"],
+                                mode="append"
+                            )
+    
+                        res2_code, res2_text = search_api.send_search_request(
+                            request_body=search_request.to_json()
+                        )
+                        self.assertSearchResponse(res2_code, res2_text)
+    
+                        search_response = SearchResponse(json.loads(res2_text))
+    
+                        self.logger.debug("Response Total value: {0}".format(search_response.total))
+    
+                        self.assertSearchWithFacets(
+                            self.es_client,
+                            search_api,
+                            term_facet_size,
+                            max_count_filter_name,
+                            filter_details[max_count_filter_name]["FacetType"],
+                            max_count_filter,
+                            search_response,
+                            field_metadata[max_count_filter_name]
+                        )
+    
+                        #
+                        #if max_count_filter.count != search_response.total:
+                        #    raise FacetCountException("Search-Total value not match to facet count in initial request")
+    
+                    else:
+                        self.logger.warn("Filter -{0}- SKIPPED. There are no valid values for filter".format(
+                            facets_logical_names))
+                        facets_logical_names = []
+            except FacetNotFound, e:
+                self.logger.exception(e)
+                pytest.fail(e.message)
+            except FacetCountException, e:
+                self.logger.exception(e)
+                if term_facet_size and term_facet_size == sys.maxint:
+                    pytest.fail("Facets not working for {0}. Inner assertion: {1}".format(
+                        str(entity_with_test_field),
+                        e.message
+                    ))
+                else:
+                    pytest.skip(e.message)
+            except AssertionError, e:
+                self.logger.exception(e)
+                pytest.fail("Facets not working for {0}. Inner assertion: {1}".format(
+                    str(entity_with_test_field),
+>                   e.message
+                ))
+E               Failed: Facets not working for account__preferences.awx_geozone2id.name,address1_point,preferences.awx_rentmaximum. Inner assertion: Response code not in (200,299). Request status is 400
+
+C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\Facets\test_facet_fields.py:279: Failed
+-------------------------------- Captured log ---------------------------------
+test_facet_fields.py        32 INFO     
+Starting test: test_entity_search_with_multiple_facet_filters
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.166000
+test_facet_fields.py       145 DEBUG    
+---Input data---
+test_entity_type=account
+field_name=preferences.awx_geozone2id.name,address1_point,preferences.awx_rentmaximum
+term_facet_size=25
+field_metadata={u'address1_point': {'facet_type': 'SimpleFacet', 'metadata': {u'Sort': True, u'Search': False, u'MeasureType': u'None', u'DisplayName': u'(Address 1: Latitude, Address 1: Longitude)', u'Description': u'This field combines two CRM fields: Type the latitude value for the primary address for use in mapping and other applications. and Type the longitude value for the primary address for use in mapping and other applications.', u'EdgeNGram': False, u'IsKey': False, u'ReferencesTo': None, u'MixedSearchAlias': None, u'Facet': True, u'Result': True, u'LogicalName': u'address1_point', u'Type': u'GeoPoint', u'LatitudeName': u'address1_latitude', u'LongitudeName': u'address1_longitude'}}, u'preferences.awx_rentmaximum': {'facet_type': 'NestedCollections', 'CollectionName': u'preferences', 'Type': u'awx_preference', 'metadata': {u'Sort': False, u'Search': False, u'MeasureType': None, u'DisplayName': u'', u'Description': u'', u'EdgeNGram': False, u'IsKey': False, u'ReferencesTo': None, u'MixedSearchAlias': None, u'LatitudeName': None, u'Facet': True, u'Result': True, u'Type': u'Nullable Decimal', u'LogicalName': 'preferences.awx_rentmaximum', u'LongitudeName': None}}, u'preferences.awx_geozone2id.name': {'facet_type': 'NestedCollections', 'CollectionName': u'preferences', 'Type': u'awx_preference', 'metadata': {u'Sort': False, u'Search': False, u'MeasureType': None, u'DisplayName': u'', u'Description': u'', u'EdgeNGram': False, u'IsKey': False, u'ReferencesTo': None, u'MixedSearchAlias': None, u'LatitudeName': None, u'Facet': True, u'Result': True, u'Type': u'EntityReferenceObject', u'LogicalName': 'preferences.awx_geozone2id.name', u'LongitudeName': None}}}
+---------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": [], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": null, "Query": "*", "Size": 5}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 200 31811
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.745000
+test_facet_fields.py       205 INFO     Applying filter - address1_point -
+test_facet_fields.py       209 INFO     Test GeoDistanceFacets facet:
+test_facet_fields.py       210 INFO     Testing facet sample: {u'IsChecked': True, u'Range': {u'To': None, u'From': 16.0}}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'071ae8bc3213400ebf4715e1d859658b', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [{"Items": [{"IsChecked": true, "Range": {"To": null, "From": 16.0}}], "LogicalName": "address1_point", "Pin": {"lat": -27.47018, "lon": 153.02911}}], "ScriptFilters": [], "Ids": [], "SelectedNumericFacets": ["preferences.awx_rentmaximum"], "RelationCounts": [], "Options": null, "SelectedTermFacets": [{"Name": "preferences.awx_geozone2id.name"}], "DateTimeFacetFilters": [], "TermFacetSize": 25, "SelectedGeoFacets": ["address1_point"], "Query": "*", "Size": 5}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 400 77
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 400
+requests_api.py            142 INFO     Response reason: Bad Request
+requests_api.py            143 INFO     Response time: 0:00:01.222000
+test_facet_fields.py       276 ERROR    Response code not in (200,299). Request status is 400
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Tests\SimpleSearch\Facets\test_facet_fields.py", line 238, in test_entity_search_with_multiple_facet_filters
+    self.assertSearchResponse(res2_code, res2_text)
+  File "C:\EdgeDeployment\FunctionalTests\src\Search\Implementation\Assertions\SearchBaseAssertMixin.py", line 21, in assertSearchResponse
+    "Response code not in (200,299). Request status is {0}".format(response_code)
+AssertionError: Response code not in (200,299). Request status is 400
+#########################Server error trace#########################
+{"index":[],"megs":[]}

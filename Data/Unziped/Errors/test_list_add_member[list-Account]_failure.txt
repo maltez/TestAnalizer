@@ -1,0 +1,203 @@
+#########################Automated tests trace#########################
+Entity not found in search result, Retrying in 3 seconds...
+Entity not found in search result, Retrying in 6 seconds...
+Entity not found in search result, Retrying in 12 seconds...
+Entity not found in search result, Retrying in 24 seconds...
+Entity not found in search result, Retrying in 48 seconds...
+
+self = <MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x043E16F0>
+list_entity_test_criteria = <PyTest.CustomFixtures.custom_fixtures.ListEntityTestCriteria object at 0x04308050>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x043E1310>
+
+    @pytest.mark.crud
+    def test_list_add_member(self, list_entity_test_criteria, search_api):
+        if isinstance(list_entity_test_criteria, ListEntityTestCriteria):
+            list_base = list_entity_test_criteria.api_object
+            list_base.es_client = self.es_client
+            list_logical_name = list_entity_test_criteria.entity_name
+            member_type = list_entity_test_criteria.member_type
+            _primary_key = self.es_client.edge_metadata[list_logical_name].CacheSchema.get_fields(
+                flags=["IsKey"])[0]["PropertyName"]
+    
+            ###Create new marketing list###
+            create_response = list_base.create_entity(params={"member_type": member_type})
+    
+            #Check whether request has been performed successfully
+            self.assertHttpResponseCode(create_response)
+    
+            #Create models
+            create_resp_model = self.create_entity_model(
+                response=create_response[1],
+                primary_key_field=_primary_key,
+                search_api=search_api)
+    
+            #check list in index
+            self.assertEntityInIndex(
+                search_api=search_api,
+                entity_type=list_logical_name,
+>               entityid=create_resp_model.id
+            )
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\ListBased\test_list_based_action.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<MEGS.Tests.ListBased.test_list_based_action.TestListBased object at 0x043E16F0>,)
+kwargs = {'entity_type': 'list', 'entityid': 'be946681-7998-e311-aa29-00155d28de35', 'search_api': <Search.Implementation.Contract.search.SearchAPI object at 0x043E1310>}
+mtries = 0, mdelay = 96
+e = AssertionError('Entity not found in search result',)
+lastException = AssertionError('Entity not found in search result',)
+
+    def f_retry(*args, **kwargs):
+        mtries, mdelay = tries, delay
+        while mtries > 0:
+            try:
+                return f(*args, **kwargs)
+            except ExceptionToCheck, e:
+                print "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                time.sleep(mdelay)
+                mtries -= 1
+                mdelay *= backoff
+                lastException = e
+>       raise lastException
+E       AssertionError: Entity not found in search result
+
+C:\EdgeDeployment\FunctionalTests\src\Common\Decorators\custom_decorator.py:18: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.522000
+EntityBase.py              272 DEBUG    Creating request body...
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/businessunit HTTP/1.1" 404 104
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/businessunit/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 123
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/team HTTP/1.1" 404 96
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/team/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 122
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency HTTP/1.1" 200 2229
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/activitypointer HTTP/1.1" 200 9299
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly.settings/ValueWithVersion%601/transactioncurrency_1 HTTP/1.1" 404 113
+elasticsearch_client.py     60 WARNING  ValueWithVersion`1 entity has not been found in index xre2113qa.nightly.settings
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/transactioncurrency_1/_count HTTP/1.1" 200 59
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_search HTTP/1.1" 200 654
+EntityBase.py              383 DEBUG    Request body created:
+EntityBase.py              384 DEBUG    {"createdfromcode": "Account", "listname": "TEST tqybz", "type": "list", "description": "TEST yobld", "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}}
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/list//
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"createdfromcode": "Account", "listname": "TEST tqybz", "type": "list", "description": "TEST yobld", "transactioncurrencyid": {"logicalname": "transactioncurrency", "id": "e0a4c3a9-ad56-e311-a147-00155d280475"}}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/list// HTTP/1.1" 200 1212
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.887000
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["be946681-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2335
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.513000
+IncrementalUpdateAssertMixin.py  136 ERROR    Unable to get entity Index Version from index. entity-type=list|entity_id=be946681-7998-e311-aa29-00155d28de35 
+IncrementalUpdateAssertMixin.py  138 ERROR    list index out of range
+Traceback (most recent call last):
+  File "C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\IncrementalUpdateAssertMixin.py", line 132, in check_entity_index_version
+    index_version = obj['Results'][0]['IndexVersion']
+IndexError: list index out of range
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search list in Index with Id - be946681-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["be946681-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2335
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.257000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - be946681-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search list in Index with Id - be946681-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["be946681-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2335
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.238000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - be946681-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search list in Index with Id - be946681-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["be946681-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2335
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.607000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - be946681-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search list in Index with Id - be946681-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["be946681-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2335
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.040000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - be946681-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search list in Index with Id - be946681-7998-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/list
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'eab558571501462c96ebc55acd30dd1d', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["be946681-7998-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/list HTTP/1.1" 200 2335
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.734000
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - be946681-7998-e311-aa29-00155d28de35 - exist in search: False
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+#########################Server error trace#########################
+{"index":[],"megs":[]}

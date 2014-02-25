@@ -1,0 +1,52 @@
+#########################Automated tests trace#########################
+
+self = <MEGS.Tests.EdgeNotifications.test_edge_notification.TestEdgeNotification object at 0x035B93F0>
+
+    def test_create_edge_notification_with_user_query(self):
+        """
+            Test method. It creates new edge notification using user's query and check Index
+            @return:
+            """
+        #Send request to create new notification
+        http_response, edge_notification = self.edge_notification_controller.create_notification_using_query(
+            title="TEST test_create_edge_notification_with_user_query",
+            body="TEST",
+            userIds=[self.test_user_id],
+            query="kf")
+>       self.assertHttpResponseCode(http_response)
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\EdgeNotifications\test_edge_notification.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MEGS.Tests.EdgeNotifications.test_edge_notification.TestEdgeNotification object at 0x035B93F0>
+http_response = None, expected_resp_code = [200, 201, 202, 203, 204, 205, ...]
+
+    def assertHttpResponseCode(self, http_response, expected_resp_code=range(200, 299)):
+        """
+            Method raise assertion exception if http response code not in expected response range
+            Http response should be injection as tuple - (resp_code,resp_text)
+            @param http_response:
+            @param expected_resp_code: could be tuple|list|int
+            @return: True or assertion exception
+            """
+        error_msg = "HTTP response code is outside of expected response codes - {0}".format(expected_resp_code)
+        if type(expected_resp_code) == range or type(expected_resp_code) == list:
+>           assert http_response["status_code"] in expected_resp_code, error_msg
+E           TypeError: 'NoneType' object has no attribute '__getitem__'
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Implementation\Assertions\EdgeNotificationMixin.py:17: TypeError
+-------------------------------- Captured log ---------------------------------
+connectionpool.py          296 DEBUG    "GET /xre2113qa.nightly/_mapping HTTP/1.1" 200 443576
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:00.767000
+EdgeNotificationController.py  114 ERROR    Failed to create edge notifications. An error has occurred. Error message: 'dict' object is not callable
+#########################Server error trace#########################
+{"index":[{"TimeStamp":"2014-02-18T08:50:30.0089635Z","Message":"Error while preloading access rights for system user '913ced26-998d-e311-a5b4-00155d28de35' fot the 'awx_adhoclistmember' entity, ids: 1eaae7cd-7998-e311-aa29-00155d28de35","ErrorLevel":"ERROR","Longdate":"2014-02-18 02:50:28.3469","ThreadId":"124","Logger":"AscendixRE.Search.Crawler.Implementation.Consumers.PrefetchAccessRights","Exception":"AscendixRE.DynamicCRM.DAL.Contract.Errors.EntityNotFoundException: awx_adhoclistmember With Id = 1eaae7cd-7998-e311-aa29-00155d28de35 Does Not Exist ---> System.ServiceModel.FaultException`1[Microsoft.Xrm.Sdk.OrganizationServiceFault]: awx_adhoclistmember With Id = 1eaae7cd-7998-e311-aa29-00155d28de35 Does Not Exist\r\n\r\nServer stack trace: \r\n   at System.ServiceModel.Channels.ServiceChannel.HandleReply(ProxyOperationRuntime operation, ProxyRpc& rpc)\r\n   at System.ServiceModel.Channels.ServiceChannel.Call(String action, Boolean oneway, ProxyOperationRuntime operation, Object[] ins, Object[] outs, TimeSpan timeout)\r\n   at System.ServiceModel.Channels.ServiceChannelProxy.InvokeService(IMethodCallMessage methodCall, ProxyOperationRuntime operation)\r\n   at System.ServiceModel.Channels.ServiceChannelProxy.Invoke(IMessage message)\r\n\r\nException rethrown at [0]: \r\n   at System.Runtime.Remoting.Proxies.RealProxy.HandleReturnMessage(IMessage reqMsg, IMessage retMsg)\r\n   at System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke(MessageData& msgData, Int32 type)\r\n   at Microsoft.Xrm.Sdk.IOrganizationService.Execute(OrganizationRequest request)\r\n   at Microsoft.Xrm.Sdk.Client.OrganizationServiceProxy.ExecuteCore(OrganizationRequest request)\r\n   at Microsoft.Xrm.Client.Services.OrganizationService.InnerOrganizationService.UsingService[TResult](Func`2 action)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Entities.EntityRepository`1.<>c__DisplayClass1d.<>c__DisplayClass20.<GetUserAccessRights>b__1c(SystemUserEntityLink systemUserEntityLink)\r\n   at System.Linq.Enumerable.ToDictionary[TSource,TKey,TElement](IEnumerable`1 source, Func`2 keySelector, Func`2 elementSelector, IEqualityComparer`1 comparer)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Entities.EntityRepository`1.<>c__DisplayClass1d.<GetUserAccessRights>b__1a(ICRMQueryProvider queryProvider)\r\n   at AscendixRE.DynamicCRM.DAL.Contract.Data.Query.QueryProviderFactoryExtension.UsingQueryProvider[TResult](IQueryProviderFactory dalFactory, Func`2 action)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Entities.EntityRepository`1.GetUserAccessRights(IEnumerable`1 systemUserEntityLinks)\r\n   at Castle.Proxies.Invocations.IEntityRepository_GetUserAccessRights.InvokeMethodOnTarget()\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.EdgeCrudEventInterceptor.Intercept(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.CRMErrorCodesInterceptor.Intercept(IInvocation invocation)\r\n   --- End of inner exception stack trace ---\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Interceptors.CRMErrorCodesInterceptor.Intercept(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at AscendixRE.Profiling.Implementation.Profiler`1.Invoke(IInvocation invocation)\r\n   at Castle.DynamicProxy.AbstractInvocation.Proceed()\r\n   at Castle.Proxies.IEntityRepository`1Proxy_21.GetUserAccessRights(IEnumerable`1 systemUserEntityLinks)\r\n   at AscendixRE.DynamicCRM.DAL.Contract.Data.Security.SecurityCacheExtensions.Get[TKey,TValue](ISecurityCache`2 securityCache, IEnumerable`1 keys, Func`2 fallback)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Security.RightsChecker`1.GetAccessRightsWithCache(IEnumerable`1 entityIds, Guid systemUserId)\r\n   at AscendixRE.DynamicCRM.DAL.Implementation.Data.Security.RightsChecker`1.GetAccessRights(ICollection`1 entityIds, Guid systemUserId)\r\n   at AscendixRE.Search.Crawler.Implementation.Consumers.PrefetchAccessRights.<>c__DisplayClass1.<PopulateAccessRights>b__0(IRightsChecker rightsChecker)"}],"megs":[]}

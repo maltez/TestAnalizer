@@ -1,0 +1,175 @@
+#########################Automated tests trace#########################
+Entity found in search result, Retrying in 3 seconds...
+Entity found in search result, Retrying in 6 seconds...
+Entity found in search result, Retrying in 12 seconds...
+Entity found in search result, Retrying in 24 seconds...
+Entity found in search result, Retrying in 48 seconds...
+
+self = <MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x0363E350>
+generic_entity_test_criteria = <PyTest.InputTestCriteria.InputTestCriteria.GenericEntityTestCriteria object at 0x034DBFB0>
+search_api = <Search.Implementation.Contract.search.SearchAPI object at 0x041B9990>
+
+    @pytest.mark.crud
+    def test_delete_entity(self, generic_entity_test_criteria, search_api):
+        if isinstance(generic_entity_test_criteria, GenericEntityTestCriteria):
+            entity = generic_entity_test_criteria.api_object
+            entity.es_client = self.es_client
+            _primary_key = self.es_client.edge_metadata[entity.entity_name].get_entity_primary_key_field()
+    
+            ##Create entity
+            #http_response = list(entity.create_entity(params={}))
+            #obj_id = json.loads(http_response[1])[_primary_key]
+            if not self.get_from_local_entity_storage(entity.entity_name):
+                #Create entity
+                http_response = list(entity.create_entity(params={}))
+                obj_id = json.loads(http_response[1])[_primary_key]
+            else:
+                obj_id = self.get_from_local_entity_storage(entity.entity_name)["data_model"].id
+    
+            #Delete entity
+            self.assertHttpResponseCode(
+                entity.delete_entity(params={"id": obj_id}),
+                expected_resp_code=generic_entity_test_criteria.expected_response_code
+            )
+    
+            #Check whether entity instance not present in index
+            if entity.entity_name not in ["email", "phonecall", "fax", "task", "letter", "appointment"]:
+                self.assertEntityInIndex(
+                    search_api,
+                    entity.entity_name,
+                    obj_id,
+>                   isFound=False
+                )
+
+C:\EdgeDeployment\FunctionalTests\src\MEGS\Tests\CRUD\test_entity_crud_action.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<MEGS.Tests.CRUD.test_entity_crud_action.TestEntityBase object at 0x0363E350>, <Search.Implementation.Contract.search.SearchAPI object at 0x041B9990>, 'account', '57574f35-7798-e311-aa29-00155d28de35')
+kwargs = {'isFound': False}, mtries = 0, mdelay = 96
+e = AssertionError('Entity found in search result',)
+lastException = AssertionError('Entity found in search result',)
+
+    def f_retry(*args, **kwargs):
+        mtries, mdelay = tries, delay
+        while mtries > 0:
+            try:
+                return f(*args, **kwargs)
+            except ExceptionToCheck, e:
+                print "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                time.sleep(mdelay)
+                mtries -= 1
+                mdelay *= backoff
+                lastException = e
+>       raise lastException
+E       AssertionError: Entity found in search result
+
+C:\EdgeDeployment\FunctionalTests\src\Common\Decorators\custom_decorator.py:18: AssertionError
+-------------------------------- Captured log ---------------------------------
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: GET
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/authentication
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "GET /xre2113qa.nightly/api/authentication HTTP/1.1" 200 2097
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:02.529000
+EntityBase.py              187 INFO     Sending DELETE request..
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: DELETE
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/account/57574f35-7798-e311-aa29-00155d28de35/
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "DELETE /xre2113qa.nightly/api/account/57574f35-7798-e311-aa29-00155d28de35/ HTTP/1.1" 200 0
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:31.349000
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search account in Index with Id - 57574f35-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["57574f35-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 200 14280
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.105000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - 57574f35-7798-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"address1_latitude": 27.62, "websiteurl": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "IndexVersion": 4, "statuscode": "Active", "industrycode": "Consulting", "entityAdHocLists": null, "telephone1": "TEST English / English", "parentaccountid": {"logicalname": "account", "id": "5cca5c8a-ec73-e311-bb29-00155d280475", "name": "Jan2_A1"}, "address1_stateorprovince": "TEST ilcsf", "address1_city": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "description": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "createdon": "2014-02-18T08:32:33Z", "address1_postalcode": "TEST-1990", "statecode": "Active", "favorites": false, "address1_longitude": -106.34, "address1_line1": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "address1_line2": "TEST Japanese / \u00e3\u0083\u00a1\u00e3\u0082\u00a4\u00e3\u0083\u00b3\u00e3\u0083\u009a\u00e3\u0083\u00bc", "address1_line3": "TEST xbzik", "preferences": [], "modifiedon": "2014-02-18T08:32:33Z", "name": "TEST dfdil", "aggregateCountCodes": {"note": 0, "connection": 0, "activity": 0, "history": 0}, "versionnumber": 2080647, "address1_addresstypecode": null, "accountid": "57574f35-7798-e311-aa29-00155d28de35"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 57574f35-7798-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search account in Index with Id - 57574f35-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["57574f35-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 200 14280
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:02.507000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - 57574f35-7798-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"address1_latitude": 27.62, "websiteurl": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "IndexVersion": 4, "statuscode": "Active", "industrycode": "Consulting", "entityAdHocLists": null, "telephone1": "TEST English / English", "parentaccountid": {"logicalname": "account", "id": "5cca5c8a-ec73-e311-bb29-00155d280475", "name": "Jan2_A1"}, "address1_stateorprovince": "TEST ilcsf", "address1_city": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "description": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "createdon": "2014-02-18T08:32:33Z", "address1_postalcode": "TEST-1990", "statecode": "Active", "favorites": false, "address1_longitude": -106.34, "address1_line1": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "address1_line2": "TEST Japanese / \u00e3\u0083\u00a1\u00e3\u0082\u00a4\u00e3\u0083\u00b3\u00e3\u0083\u009a\u00e3\u0083\u00bc", "address1_line3": "TEST xbzik", "preferences": [], "modifiedon": "2014-02-18T08:32:33Z", "name": "TEST dfdil", "aggregateCountCodes": {"note": 0, "connection": 0, "activity": 0, "history": 0}, "versionnumber": 2080647, "address1_addresstypecode": null, "accountid": "57574f35-7798-e311-aa29-00155d28de35"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 57574f35-7798-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search account in Index with Id - 57574f35-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["57574f35-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 200 14280
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.008000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - 57574f35-7798-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"address1_latitude": 27.62, "websiteurl": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "IndexVersion": 4, "statuscode": "Active", "industrycode": "Consulting", "entityAdHocLists": null, "telephone1": "TEST English / English", "parentaccountid": {"logicalname": "account", "id": "5cca5c8a-ec73-e311-bb29-00155d280475", "name": "Jan2_A1"}, "address1_stateorprovince": "TEST ilcsf", "address1_city": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "description": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "createdon": "2014-02-18T08:32:33Z", "address1_postalcode": "TEST-1990", "statecode": "Active", "favorites": false, "address1_longitude": -106.34, "address1_line1": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "address1_line2": "TEST Japanese / \u00e3\u0083\u00a1\u00e3\u0082\u00a4\u00e3\u0083\u00b3\u00e3\u0083\u009a\u00e3\u0083\u00bc", "address1_line3": "TEST xbzik", "preferences": [], "modifiedon": "2014-02-18T08:32:33Z", "name": "TEST dfdil", "aggregateCountCodes": {"note": 0, "connection": 0, "activity": 0, "history": 0}, "versionnumber": 2080647, "address1_addresstypecode": null, "accountid": "57574f35-7798-e311-aa29-00155d28de35"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 57574f35-7798-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search account in Index with Id - 57574f35-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["57574f35-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 200 14280
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:01.751000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - 57574f35-7798-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"address1_latitude": 27.62, "websiteurl": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "IndexVersion": 4, "statuscode": "Active", "industrycode": "Consulting", "entityAdHocLists": null, "telephone1": "TEST English / English", "parentaccountid": {"logicalname": "account", "id": "5cca5c8a-ec73-e311-bb29-00155d280475", "name": "Jan2_A1"}, "address1_stateorprovince": "TEST ilcsf", "address1_city": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "description": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "createdon": "2014-02-18T08:32:33Z", "address1_postalcode": "TEST-1990", "statecode": "Active", "favorites": false, "address1_longitude": -106.34, "address1_line1": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "address1_line2": "TEST Japanese / \u00e3\u0083\u00a1\u00e3\u0082\u00a4\u00e3\u0083\u00b3\u00e3\u0083\u009a\u00e3\u0083\u00bc", "address1_line3": "TEST xbzik", "preferences": [], "modifiedon": "2014-02-18T08:32:33Z", "name": "TEST dfdil", "aggregateCountCodes": {"note": 0, "connection": 0, "activity": 0, "history": 0}, "versionnumber": 2080647, "address1_addresstypecode": null, "accountid": "57574f35-7798-e311-aa29-00155d28de35"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 57574f35-7798-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   71 DEBUG    #######################
+IncrementalUpdateAssertMixin.py   72 DEBUG    Search account in Index with Id - 57574f35-7798-e311-aa29-00155d28de35 -
+requests_api.py             76 INFO     Sending HTTP request...
+requests_api.py             83 DEBUG    Method type: POST
+requests_api.py             94 DEBUG    Url: http://localhost/xre2113qa.nightly/api/search/account
+requests_api.py             95 DEBUG    Headers: {'Authorization-Token': u'73bce4f4c9164851985add8927914419', 'Accept-Language': 'en-US,en;q=0.8', 'Content-Type': 'application/json', 'Accept-Encoding': 'deflate, gzip'}
+requests_api.py            104 DEBUG    Request body: {"ResultsFormat": null, "From": 0, "SelectedDateTimeFacets": null, "Relations": [], "PinTo": {"lat": -27.47018, "lon": 153.02911}, "NumericFacetFilters": [], "OrderBy": [{"Field": "_score", "IsDescending": "true"}], "GeoPolygonFilters": [], "TermFacetFilters": [], "FieldFilters": [], "GeoDistanceFacetFilters": [], "ScriptFilters": [], "Ids": ["57574f35-7798-e311-aa29-00155d28de35"], "SelectedNumericFacets": null, "RelationCounts": [], "Options": null, "SelectedTermFacets": null, "DateTimeFacetFilters": [], "TermFacetSize": 1, "SelectedGeoFacets": null, "Query": "*", "Size": 1}
+connectionpool.py          176 INFO     Starting new HTTP connection (1): localhost
+connectionpool.py          344 DEBUG    "POST /xre2113qa.nightly/api/search/account HTTP/1.1" 200 14280
+requests_api.py            140 INFO     Response recieved...
+requests_api.py            141 INFO     Response status: 200
+requests_api.py            142 INFO     Response reason: OK
+requests_api.py            143 INFO     Response time: 0:00:03.428000
+IncrementalUpdateAssertMixin.py  160 DEBUG    Search Result for Id - 57574f35-7798-e311-aa29-00155d28de35 -:
+IncrementalUpdateAssertMixin.py  161 DEBUG    {"address1_latitude": 27.62, "websiteurl": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "IndexVersion": 4, "statuscode": "Active", "industrycode": "Consulting", "entityAdHocLists": null, "telephone1": "TEST English / English", "parentaccountid": {"logicalname": "account", "id": "5cca5c8a-ec73-e311-bb29-00155d280475", "name": "Jan2_A1"}, "address1_stateorprovince": "TEST ilcsf", "address1_city": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "description": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "createdon": "2014-02-18T08:32:33Z", "address1_postalcode": "TEST-1990", "statecode": "Active", "favorites": false, "address1_longitude": -106.34, "address1_line1": "TEST Thai / \u00e0\u00b8\u00ab\u00e0\u00b8\u0099\u00e0\u00b9\u0089\u00e0\u00b8\u00b2\u00e0\u00b8\u00ab\u00e0\u00b8\u00a5\u00e0\u00b8\u00b1\u00e0\u00b8\u0081", "address1_line2": "TEST Japanese / \u00e3\u0083\u00a1\u00e3\u0082\u00a4\u00e3\u0083\u00b3\u00e3\u0083\u009a\u00e3\u0083\u00bc", "address1_line3": "TEST xbzik", "preferences": [], "modifiedon": "2014-02-18T08:32:33Z", "name": "TEST dfdil", "aggregateCountCodes": {"note": 0, "connection": 0, "activity": 0, "history": 0}, "versionnumber": 2080647, "address1_addresstypecode": null, "accountid": "57574f35-7798-e311-aa29-00155d28de35"}
+IncrementalUpdateAssertMixin.py   92 DEBUG    Entity with id - 57574f35-7798-e311-aa29-00155d28de35 - exist in search: True
+IncrementalUpdateAssertMixin.py   93 DEBUG    #######################
+#########################Server error trace#########################
+{"index":[],"megs":[]}
