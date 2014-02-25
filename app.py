@@ -7,6 +7,7 @@ sys.path.append('Workers/')
 from DataParser import ResultParser
 from GroupByUrl import GroupByUrl
 from GroupByBodyParam import GroupByBodyParam
+from ImportToText import ImportToText
 
 # Prepare info from config
 config = ConfigParser.RawConfigParser()
@@ -25,8 +26,9 @@ paths = [config.get('Environment_Constants', 'SearchStatisticFileName'),
 postResults = ResultParser.ParseRequestFile(paths)
 groupedResults = GroupByUrl.grouped_by_url(postResults)
 #paramGr = GroupByBodyParam.GroupByBodyParam(groupedResults)
-
-print(len(groupedResults))
+ImportToText.import_report_to_text_file('Data\\report.txt', groupedResults)
+ImportToText.import_report_to_json('Data\\report.json', groupedResults)
+print(groupedResults[0])
 
 #config.set('Environment_Constants', 'SearchStatisticFileName', 'Data\\performance_get_requests.csv')
 #config.set('Environment_Constants', 'MergeStatisticFileName', 'Data\\Unziped\\Statistics\\megs_stats.csv')

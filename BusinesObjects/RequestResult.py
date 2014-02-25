@@ -11,3 +11,6 @@ class RequestResult:
         self.params = params
         self.elapsedTime = float(elapsedTime)
         self.contentLength = int(contentLength)
+
+    def to_json(self):
+        return {'url': self.url, 'type': self.type, 'body':self.body, 'elapsedTime':self.elapsedTime, 'contentLength': self.contentLength}

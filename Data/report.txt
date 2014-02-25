@@ -1,0 +1,33 @@
+---------------------------------------Test Result---------------------------------------
+
+1) api/search/list max: 4.464 min: 0.142 median: 0.844397435897
+2) api/search/awx_property max: 18.301 min: 0.228 median: 1.78921195652
+3) api/search/awx_availability max: 5.684 min: 0.159 median: 1.22348369565
+4) api/search/awx_listing max: 10.13 min: 0.265 median: 1.04655483871
+5) api/search/awx_adhoclist max: 4.423 min: 0.242 median: 1.10540322581
+6) api/search/opportunity max: 5.126 min: 0.158 median: 0.954048484848
+7) api/search/awx_lease max: 5.439 min: 0.322 median: 1.56205263158
+8) api/search/account max: 14.331 min: 0.316 median: 1.79579111111
+9) api/search/contact max: 9.619 min: 0.287 median: 1.49109128631
+10) api/search/annotation max: 4.892 min: 0.118 median: 0.9983
+11) api/search/awx_image max: 5.293 min: 0.155 median: 1.08
+12) api/search/listmember max: 1.289 min: 0.165 median: 0.7471
+13) api/search/awx_floor max: 4.717 min: 0.414 median: 1.1994
+14) api/search/connection max: 3.136 min: 0.115 median: 0.769583333333
+15) api/search/awx_propertysale max: 4.09 min: 0.256 median: 1.0992183908
+16) api/search/activitypointer max: 6.06 min: 0.147 median: 1.08565384615
+17) api/search/awx_adhoclistmember max: 4.179 min: 0.258 median: 0.934333333333
+18) api/search/awx_commission max: 5.106 min: 0.15 median: 1.01528
+19) api/search/awx_leaseperiod max: 6.468 min: 0.315 median: 1.0818
+20) api/search/awx_preference max: 4.648 min: 0.222 median: 0.887077464789
+21) api/search/connectionroleassociation max: 1.894 min: 0.543 median: 1.11283333333
+22) api/search/transactioncurrency max: 2.543 min: 0.343 median: 0.839863636364
+23) api/search/activityparty max: 1.556 min: 0.488 median: 0.953066666667
+24) api/search/connectionrole max: 1.632 min: 0.13 median: 0.8285
+25) api/search/awx_geography max: 2.125 min: 0.123 median: 0.716461538462
+26) api/search/systemuser max: 2.375 min: 0.232 median: 0.818288888889
+27) api/search/connectionroleobjecttypecode max: 3.156 min: 0.422 median: 1.60066666667
+28) api/search/contact,opportunity,awx_lease max: 2.874 min: 2.874 median: 2.874
+29) api/search/account,opportunity,awx_lease,awx_listing max: 2.632 min: 2.632 median: 2.632
+30) api/search/contact,account,opportunity,awx_lease,awx_availability max: 3.329 min: 3.329 median: 3.329
+31) api/search/contact,account,opportunity,awx_property,awx_availability,awx_listing max: 3.477 min: 3.477 median: 3.477
